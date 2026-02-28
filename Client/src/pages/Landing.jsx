@@ -21,13 +21,13 @@ export default function Landing() {
       <header className={`sticky top-0 z-40 flex justify-between items-center px-8 lg:px-16 py-4 backdrop-blur-md border-b transition-colors duration-300 ${isDark ? 'bg-[#140528]/85 border-[#c89b2a]/20' : 'bg-white/85 border-slate-100'}`}>
         <div className="flex items-center gap-3">
           <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white ${isDark ? 'bg-amber-600' : 'bg-[#7c1fa0]'}`}>CCS</div>
-          <span className={`font-serif text-lg font-extrabold ${isDark ? 'text-[#e2c97e]' : 'text-[#7c1fa0]'}`}>Sit-in System</span>
+          <span className={`font-serif text-lg font-extrabold ${isDark ? 'text-[#e2c97e]' : 'text-[#7c1fa0]'}`}>Sit-in Monitoring System</span>
         </div>
 
         <nav className="flex items-center gap-6 lg:gap-8">
           <a className={`font-semibold cursor-pointer text-sm transition-colors ${isDark ? 'text-purple-200/70 hover:text-[#c89b2a]' : 'text-slate-600 hover:text-[#7c1fa0]'}`}>Home</a>
 
-          {/* DROPDOWN (Fixed using Tailwind group-hover) */}
+          {/* DROPDOWN */}
           <div className="group relative py-4 -my-4">
             <a className={`font-semibold cursor-pointer text-sm transition-colors ${isDark ? 'text-purple-200/70 hover:text-[#c89b2a]' : 'text-slate-600 hover:text-[#7c1fa0]'}`}>Community ▾</a>
             <div className={`absolute top-full left-0 w-40 rounded-xl shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 border ${isDark ? 'bg-[#1e0838] border-[#c89b2a]/20' : 'bg-white border-slate-200'}`}>
@@ -55,7 +55,7 @@ export default function Landing() {
       </header>
 
       {/* HERO SECTION */}
-      <main className="flex-1 flex flex-col lg:flex-row items-center justify-center px-12 lg:px-20 gap-12 lg:gap-20 relative overflow-hidden">
+      <main className="flex-1 flex flex-col lg:flex-row items-center justify-center px-12 lg:px-20 py-12 gap-12 lg:gap-20 relative overflow-hidden">
         
         {/* Background Blobs */}
         <div className={`absolute top-[10%] left-[5%] w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none ${isDark ? 'bg-[#7c1fa0]/30' : 'bg-[#7c1fa0]/10'}`} />
@@ -68,7 +68,7 @@ export default function Landing() {
           </div>
 
           <h1 className="font-serif text-[clamp(5rem,10vw,9rem)] font-black leading-none bg-[length:200%_auto] bg-clip-text text-transparent mb-7" style={{ animation: 'shimmer 4s linear infinite', backgroundImage: isDark ? 'linear-gradient(to right, #c89b2a, #e2c97e, #c89b2a)' : 'linear-gradient(to right, #7c1fa0, #c89b2a, #7c1fa0)' }}>
-            SITSIT
+            SIT-SIT
           </h1>
 
           <p className={`text-lg leading-relaxed max-w-md mb-9 font-medium ${isDark ? 'text-purple-200/70' : 'text-slate-600'}`}>
@@ -76,13 +76,11 @@ export default function Landing() {
           </p>
 
           <div className="flex gap-4">
-            {/* Solid Confirmation Button (PRIMARY) */}
             <button onClick={() => setShowRegister(true)} className={`text-white font-bold font-serif px-8 py-3.5 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all ${isDark ? 'bg-amber-600 hover:bg-amber-700' : 'bg-[#7c1fa0] hover:bg-purple-800'}`}>
               Get Started
             </button>
-            {/* Subtle Secondary Button (CANCEL) */}
             <button className={`p-0.5 rounded-full font-serif font-bold group transition-all duration-200 ${isDark ? 'bg-amber-600 hover:bg-amber-700' : 'bg-[#7c1fa0] hover:bg-purple-800'}`}>
-                <div className={`px-7 py-3 rounded-full text-slate-600 ${isDark ? 'bg-[#1a0830] text-[#e2c97e]' : 'bg-white text-[#7c1fa0]'}`}>
+                <div className={`px-7 py-3 rounded-full text-slate-600 transition-colors ${isDark ? 'bg-[#0f0520] group-hover:bg-[#1a0830] text-[#e2c97e]' : 'bg-white group-hover:bg-slate-50 text-[#7c1fa0]'}`}>
                     Learn More
                 </div>
             </button>
@@ -100,6 +98,26 @@ export default function Landing() {
           </div>
         </div>
       </main>
+
+      {/* FOOTER */}
+      <footer className={`mt-auto py-8 px-8 lg:px-16 border-t transition-colors duration-300 z-10 relative ${isDark ? 'bg-[#0a0314] border-[#c89b2a]/20 text-purple-200/50' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className={`font-bold font-serif ${isDark ? 'text-[#e2c97e]' : 'text-[#7c1fa0]'}`}>CCS Sit-in System</span>
+            <span className="text-sm"> {new Date().getFullYear()}</span>
+          </div>
+          
+          <div className="text-xs font-medium tracking-wide">
+            University of Cebu · College of Computer Studies
+          </div>
+          
+          <div className="flex gap-6 text-sm font-medium">
+            <a className={`cursor-pointer transition-colors ${isDark ? 'hover:text-[#c89b2a]' : 'hover:text-[#7c1fa0]'}`}>Privacy Policy</a>
+            <a className={`cursor-pointer transition-colors ${isDark ? 'hover:text-[#c89b2a]' : 'hover:text-[#7c1fa0]'}`}>Terms of Service</a>
+            <a className={`cursor-pointer transition-colors ${isDark ? 'hover:text-[#c89b2a]' : 'hover:text-[#7c1fa0]'}`}>Contact</a>
+          </div>
+        </div>
+      </footer>
 
       {/* MODALS */}
       {showRegister && <RegisterModal onClose={() => setShowRegister(false)} isDark={isDark} />}
