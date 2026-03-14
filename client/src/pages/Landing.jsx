@@ -109,19 +109,6 @@ export default function Landing() {
             <img src={ccsLogo} alt="CCS Logo" className="relative w-full h-full object-contain rounded-full z-10" />
           </div>
         </div>
-
-        <div style={{ padding: '20px', marginTop: '20px', border: '2px dashed green' }}>
-          <h3>PHP Connection Test:</h3>
-          {backendData ? (
-            <div>
-              <p><strong>Status:</strong> {backendData.status}</p>
-              <p><strong>Message:</strong> {backendData.message}</p>
-            </div>
-          ) : (
-            <p>Trying to connect to PHP server...</p>
-          )}
-        </div>
-        
       </main>
 
       {/* FOOTER */}
