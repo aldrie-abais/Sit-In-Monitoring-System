@@ -5,7 +5,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Landing from './pages/landing'
 import Dashboard from './pages/Dashboard'
-
+import ProtectedRoute from './components/modal/ProtectedRoute'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -14,7 +14,15 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+
+        <Route 
+          path="/dashboard" 
+          element={
+              <ProtectedRoute>
+                  <Dashboard />
+              </ProtectedRoute>
+          } 
+        />
       </Routes>
     </Router>
   )

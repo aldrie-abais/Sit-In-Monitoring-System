@@ -11,7 +11,7 @@ export default function Landing() {
   const [backendData, setBackendData] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api.php') // Make sure this matches your PHP server URL
+    fetch('http://localhost:8080/api/api.php') // Make sure this matches your PHP server URL
       .then((response) => response.json())
       .then((data) => {
         console.log("Data from PHP:", data);

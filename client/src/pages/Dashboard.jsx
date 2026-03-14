@@ -4,15 +4,24 @@ import { useNavigate } from 'react-router-dom';
 export default function Dashboard() {
   const [isDark, setIsDark] = useState(true); // Default to dark based on your theme
   const navigate = useNavigate();
-
-  // Mock data - eventually this will come from your PHP session
+  const savedUser = JSON.parse(localStorage.getItem('user')) || {};
   const user = {
-    name: "Juan Dela Cruz",
-    id: "2210345",
-    remainingHours: 15,
-    course: "BSIT - 3"
+    name: `${savedUser.user_first_name} ${savedUser.user_last_name}`,
+    id: savedUser.user_id,
+    remainingHours: 30, // We can set a default for now
+    course: savedUser.user_coures_name // Using your database typo 'coures'
   };
 
+  const handleLogout = () => {
+    // 1. Clear the credentials
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('user');
+
+    // 2. Redirect and replace the current history entry
+    // This prevents the "Back" button from finding the dashboard again
+    navigate('/', { replace: true });
+  };
+  
   return (
     <div className={`min-h-screen font-sans flex transition-colors duration-300 ${isDark ? 'bg-[#0f0520]' : 'bg-slate-50'}`}>
       <style>{`

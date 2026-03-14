@@ -24,13 +24,15 @@ const handleLogin = (e) => {
     .then(data => {
       // 1. First, check the status from PHP
       if (data.status === 'success') {
-        
-        // 2. Only access data.user if status is success
-        alert(`Welcome back, ${data.user.user_first_name}!`);
-        console.log("Logged in user:", data.user);
-        navigate('/dashboard');
+    localStorage.setItem('isLoggedIn', 'true'); // Must be a string
+    localStorage.setItem('user', JSON.stringify(data.user));
+    
+    // Use a small timeout if the redirect is too fast for your machine
+    setTimeout(() => {
+        navigate('/dashboard', { replace: true });
         onClose();
-      } else {
+    }, 100); 
+} else {
         // 3. If PHP sent an error (like "Invalid password"), show that message instead
         alert('Login Failed: ' + data.message);
       }
