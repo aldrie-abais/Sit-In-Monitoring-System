@@ -5,6 +5,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Landing from './pages/landing'
 import Dashboard from './pages/Dashboard'
+import AdminDashboard from './pages/AdminDashboard'
 import ProtectedRoute from './components/modal/ProtectedRoute'
 
 function App() {
@@ -18,11 +19,20 @@ function App() {
         <Route 
           path="/dashboard" 
           element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['Student']}>
                   <Dashboard />
               </ProtectedRoute>
           } 
         />
+
+        <Route 
+          path="/admin-dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        /> 
       </Routes>
     </Router>
   )

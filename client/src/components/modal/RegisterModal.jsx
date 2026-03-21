@@ -71,9 +71,13 @@ export default function RegisterModal({ onClose, isDark }) {
         className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl" 
         onClick={e => e.stopPropagation()}
       >
-        <div className="bg-gradient-to-br from-[#4a0080] via-[#7c1fa0] to-[#c89b2a] px-9 py-7">
-          <p className="font-serif text-3xl font-bold text-white tracking-wide">Create an Account</p>
-          <p className="text-white/85 text-sm mt-1 font-medium">Join the CCS Sit-in Monitoring System</p>
+        <div className={`sticky top-0 z-20 px-9 py-7 border-b backdrop-blur-md transition-colors duration-300 ${isDark ? 'bg-[#1a0830]/80 border-[#c89b2a]/20' : 'bg-white/80 border-slate-200'}`}>
+          <p className={`font-serif text-3xl font-bold tracking-wide ${isDark ? 'text-white' : 'text-[#4a0080]'}`}>
+            Create an Account
+          </p>
+          <p className={`text-sm mt-1 font-medium ${isDark ? 'text-purple-200/70' : 'text-slate-500'}`}>
+            Join the CCS Sit-in Monitoring System
+          </p>
         </div>
 
         <div className={`px-9 pt-7 pb-8 transition-colors duration-300 ${isDark ? 'bg-[#1a0830]' : 'bg-white'}`}>

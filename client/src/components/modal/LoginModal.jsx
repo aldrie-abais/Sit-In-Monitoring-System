@@ -52,9 +52,13 @@ const handleLogin = (e) => {
         className="relative w-full max-w-md rounded-3xl overflow-hidden shadow-2xl" 
         onClick={e => e.stopPropagation()}
       >
-        <div className="bg-gradient-to-br from-[#4a0080] via-[#7c1fa0] to-[#c89b2a] px-9 py-7">
-          <p className="font-serif text-3xl font-bold text-white tracking-wide">Welcome Back</p>
-          <p className="text-white/85 text-sm mt-1 font-medium">Log in to your CCS Sit-in account</p>
+        <div className={`sticky top-0 z-20 px-9 py-7 border-b backdrop-blur-md transition-colors duration-300 ${isDark ? 'bg-[#1a0830]/80 border-[#c89b2a]/20' : 'bg-white/80 border-slate-200'}`}>
+          <p className={`font-serif text-3xl font-bold tracking-wide ${isDark ? 'text-white' : 'text-[#4a0080]'}`}>
+            Welcome Back
+          </p>
+          <p className={`text-sm mt-1 font-medium ${isDark ? 'text-purple-200/70' : 'text-slate-500'}`}>
+            Log in to your CCS Sit-in account
+          </p>
         </div>
 
         <div className={`px-9 pt-7 pb-8 transition-colors duration-300 ${isDark ? 'bg-[#1a0830]' : 'bg-white'}`}>
@@ -79,7 +83,7 @@ const handleLogin = (e) => {
             />
 
             <div className="flex justify-end -mt-1 mb-1">
-              <button type="button" className="text-xs font-bold hover:underline">Forgot Password?</button>
+              <button type="button" className={`text-xs font-bold hover:underline ${isDark ? 'text-purple-200/70' : 'text-slate-500'}`}>Forgot Password?</button>
             </div>
 
             <button 
