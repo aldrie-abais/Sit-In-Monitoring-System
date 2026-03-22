@@ -7,6 +7,8 @@ import Landing from './pages/landing'
 import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import ProtectedRoute from './components/modal/ProtectedRoute'
+import AdminStudents from './pages/AdminStudents'
+import AdminRecords from './pages/AdminRecords'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -14,8 +16,10 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Public Landing Page */}
         <Route path="/" element={<Landing />} />
 
+        {/* Student Dashboard */}
         <Route 
           path="/dashboard" 
           element={
@@ -25,6 +29,7 @@ function App() {
           } 
         />
 
+        {/* Main Admin Dashboard */}
         <Route 
           path="/admin-dashboard" 
           element={
@@ -33,6 +38,25 @@ function App() {
             </ProtectedRoute>
           } 
         /> 
+
+        {/* Admin Students List (Nested URL) */}
+        <Route 
+          path="/admin-dashboard/students" 
+          element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <AdminStudents />
+            </ProtectedRoute>
+          } 
+        /> 
+
+        <Route 
+          path="/admin-dashboard/records" 
+          element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <AdminRecords />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
     </Router>
   )
