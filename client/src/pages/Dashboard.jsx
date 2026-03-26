@@ -28,9 +28,23 @@ export default function Dashboard() {
   };
 
   const handleLogout = () => {
+    // 1. Grab the user data before we delete it
+    const savedUser = JSON.parse(localStorage.getItem('user'));
+
+    // 2. If we have a user, tell the database they are logging out
+    if (savedUser && savedUser.user_id) {
+      fetch('http://localhost:8080/api/logout.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: savedUser.user_id })
+      })
+      .catch(error => console.error("Error updating logout status:", error));
+    }
+
+    // 3. Clear local storage and redirect
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('user');
-    navigate('/', { replace: true });
+    navigate('/');
   };
 
   return (
