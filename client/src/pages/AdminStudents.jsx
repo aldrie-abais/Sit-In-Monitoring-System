@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import AddStudentModal from '../components/modal/AddStudentModal';
+import SearchStudentModal from '../components/modal/SearchStudentModal';
 
 export default function AdminStudents() {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ export default function AdminStudents() {
   const [searchTerm, setSearchTerm] = useState('');
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   // 2. EXTRACT FETCH LOGIC SO WE CAN REUSE IT
   const fetchStudents = () => {
@@ -200,6 +202,9 @@ export default function AdminStudents() {
         />
       )}
 
+      {showSearch && (
+        <SearchStudentModal onClose={() => setShowSearch(false)} />
+      )}
     </div>
   );
 }
