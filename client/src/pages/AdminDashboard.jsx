@@ -6,6 +6,7 @@ import SearchStudentModal from '../components/modal/SearchStudentModal';
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [announcement, setAnnouncement] = useState('');
+  const [announcementsList, setAnnouncementsList] = useState([]);
   
   // Modal States
   const [showSearch, setShowSearch] = useState(false);
@@ -21,6 +22,39 @@ export default function AdminDashboard() {
   // Theme colors for the pie chart
   const pieColors = ['#4a0080', '#c89b2a', '#d8b4fe', '#fde047', '#94a3b8'];
 
+  const fetchAnnouncements = () => {
+    fetch('http://localhost:8080/api/get_announcements.php')
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          setAnnouncementsList(data.announcements);
+        }
+      })
+      .catch(err => console.error("Failed to fetch announcements:", err));
+  };
+
+  const handlePostAnnouncement = () => {
+    if (!announcement.trim()) {
+      alert("Please type an announcement.");
+      return;
+    }
+    
+    fetch('http://localhost:8080/api/post_announcement.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: announcement })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success') {
+        setAnnouncement(''); // Clear the text box
+        fetchAnnouncements(); // Instantly refresh the list
+      } else {
+        alert(data.message);
+      }
+    });
+  };
+
   const fetchDashboardData = () => {
     fetch('http://localhost:8080/api/get_dashboard_stats.php')
       .then(res => res.json())
@@ -35,6 +69,7 @@ export default function AdminDashboard() {
   // Fetch data on load
   useEffect(() => {
     fetchDashboardData();
+    fetchAnnouncements();
   }, []);
 
   const handleLogout = () => {
@@ -158,19 +193,30 @@ export default function AdminDashboard() {
                   value={announcement}
                   onChange={(e) => setAnnouncement(e.target.value)}
                 ></textarea>
-                <button className="mt-4 w-full bg-[#4a0080] text-white py-3 rounded-xl shadow-lg hover:bg-purple-900 transition-all font-bold text-sm tracking-wide active:scale-95">
+                <button 
+                  onClick={handlePostAnnouncement} 
+                  className="mt-4 w-full bg-[#4a0080] text-white py-3 rounded-xl shadow-lg hover:bg-purple-900 transition-all font-bold text-sm tracking-wide active:scale-95"
+                >
                   POST TO DASHBOARD
                 </button>
               </div>
 
               <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 px-2">Recently Posted</h2>
               <div className="space-y-4">
-                <div className="p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
-                  <p className="font-bold text-[#4a0080] text-xs">CCS Admin • May 08, 2026</p>
-                  <p className="text-slate-600 text-sm mt-1 leading-relaxed">
-                    The laboratories will be closed this coming Friday for faculty development.
-                  </p>
-                </div>
+                {announcementsList.length > 0 ? (
+                  announcementsList.map((item) => (
+                    <div key={item.id} className="p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
+                      <p className="font-bold text-[#4a0080] text-xs">
+                        {item.admin_name} • {new Date(item.date_posted).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+                      </p>
+                      <p className="text-slate-600 text-sm mt-1 leading-relaxed whitespace-pre-wrap">
+                        {item.content}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-500 italic px-2">No announcements posted yet.</p>
+                )}
               </div>
             </div>
           </div>
