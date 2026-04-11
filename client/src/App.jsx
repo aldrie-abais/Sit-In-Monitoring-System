@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import ProtectedRoute from './components/modal/ProtectedRoute'
 import AdminStudents from './pages/AdminStudents'
 import AdminRecords from './pages/AdminRecords'
+import StudentHistory from './pages/StudentHistory'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -25,6 +26,16 @@ function App() {
           element={
               <ProtectedRoute allowedRoles={['Student']}>
                   <Dashboard />
+              </ProtectedRoute>
+          } 
+        />
+
+        {/* NEW: Student History Page */}
+        <Route 
+          path="/history" 
+          element={
+              <ProtectedRoute allowedRoles={['Student']}>
+                  <StudentHistory />
               </ProtectedRoute>
           } 
         />
