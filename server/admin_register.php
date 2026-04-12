@@ -31,6 +31,16 @@ try {
         'pass' => password_hash($data->user_password, PASSWORD_DEFAULT)
     ]);
 
+    // Create notification for admitted student
+    $notificationMsg = "You have been admitted to the Sit-In Monitoring System by the administrator.";
+    $sqlNotification = "INSERT INTO notifications (user_id, type, message, is_read) 
+                        VALUES (:user_id, 'admitted', :message, 0)";
+    $stmtNotif = $pdo->prepare($sqlNotification);
+    $stmtNotif->execute([
+        'user_id' => $data->user_id,
+        'message' => $notificationMsg
+    ]);
+
     echo json_encode(['status' => 'success', 'message' => 'Student added successfully!']);
 } catch(PDOException $e) {
     echo json_encode(['status' => 'error', 'message' => 'ID already exists or DB error.']);
