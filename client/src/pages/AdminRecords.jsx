@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SearchStudentModal from '../components/modal/SearchStudentModal';
+import FeatureComingSoonModal from '../components/modal/FeatureComingSoonModal';
 
 
 export default function AdminRecords() {
   const [showSearch, setShowSearch] = useState(false);
+  const [showReportsSoon, setShowReportsSoon] = useState(false);
   const navigate = useNavigate();
   const [activeStudents, setActiveStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,10 +86,10 @@ const openFeedbackModal = (studentId) => {
         <div className="flex items-center gap-8">
           <div className="hidden md:flex items-center gap-6 text-sm font-semibold">
             <Link to="/admin-dashboard" className="text-slate-500 hover:text-[#4a0080] transition-colors">Home</Link>
-            <button className="text-slate-500 hover:text-[#4a0080] transition-colors">Search</button>
+            <button onClick={() => setShowSearch(true)} className="text-slate-500 hover:text-[#4a0080] transition-colors">Search</button>
             <Link to="/admin-dashboard/students" className="text-slate-500 hover:text-[#4a0080] transition-colors">Students</Link>
             <span className="text-[#4a0080] border-b-2 border-[#4a0080] pb-1 cursor-default">Records</span>
-            <button className="text-slate-500 hover:text-[#4a0080] transition-colors">Reports</button>
+            <button onClick={() => setShowReportsSoon(true)} className="text-slate-500 hover:text-[#4a0080] transition-colors">Reports</button>
           </div>
           <button onClick={handleLogout} className="bg-[#4a0080] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-purple-900 transition-all shadow-md active:scale-95">
             LOG OUT
@@ -168,7 +170,18 @@ const openFeedbackModal = (studentId) => {
       )}
 
       {showSearch && (
-        <SearchStudentModal onClose={() => setShowSearch(false)} />
+        <SearchStudentModal 
+          onClose={() => setShowSearch(false)}
+          onStudentFound={() => setShowSearch(false)}
+        />
+      )}
+
+      {showReportsSoon && (
+        <FeatureComingSoonModal
+          onClose={() => setShowReportsSoon(false)}
+          title="Reports"
+          message="This feature will be available soon!"
+        />
       )}
     </div>
   );
