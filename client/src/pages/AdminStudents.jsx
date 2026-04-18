@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import AddStudentModal from '../components/modal/AddStudentModal';
 import SearchStudentModal from '../components/modal/SearchStudentModal';
+import FeatureComingSoonModal from '../components/modal/FeatureComingSoonModal';
 
 export default function AdminStudents() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function AdminStudents() {
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showReportsSoon, setShowReportsSoon] = useState(false);
 
   // 2. EXTRACT FETCH LOGIC SO WE CAN REUSE IT
   const fetchStudents = () => {
@@ -82,10 +84,10 @@ export default function AdminStudents() {
         <div className="flex items-center gap-8">
           <div className="hidden md:flex items-center gap-6 text-sm font-semibold">
             <Link to="/admin-dashboard" className="text-slate-500 hover:text-[#4a0080] transition-colors">Home</Link>
-            <button className="text-slate-500 hover:text-[#4a0080] transition-colors">Search</button>
+            <button onClick={() => setShowSearch(true)} className="text-slate-500 hover:text-[#4a0080] transition-colors">Search</button>
             <span className="text-[#4a0080] border-b-2 border-[#4a0080] pb-1 cursor-default">Students</span>
             <Link to="/admin-dashboard/records" className="text-slate-500 hover:text-[#4a0080] transition-colors">Records</Link>
-            <button className="text-slate-500 hover:text-[#4a0080] transition-colors">Reports</button>
+            <button onClick={() => setShowReportsSoon(true)} className="text-slate-500 hover:text-[#4a0080] transition-colors">Reports</button>
           </div>
           
           <button onClick={handleLogout} className="bg-[#4a0080] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-purple-900 transition-all shadow-md active:scale-95">
@@ -203,7 +205,18 @@ export default function AdminStudents() {
       )}
 
       {showSearch && (
-        <SearchStudentModal onClose={() => setShowSearch(false)} />
+        <SearchStudentModal 
+          onClose={() => setShowSearch(false)}
+          onStudentFound={() => setShowSearch(false)}
+        />
+      )}
+
+      {showReportsSoon && (
+        <FeatureComingSoonModal
+          onClose={() => setShowReportsSoon(false)}
+          title="Reports"
+          message="This feature will be available soon!"
+        />
       )}
     </div>
   );

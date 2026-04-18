@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import EditProfileModal from '../components/modal/EditProfileModal';
 import NotificationDropdown from '../components/NotificationDropdown';
+import FeatureComingSoonModal from '../components/modal/FeatureComingSoonModal';
 
 export default function StudentHistory() {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ export default function StudentHistory() {
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const user = JSON.parse(localStorage.getItem('user'));
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showReservationSoon, setShowReservationSoon] = useState(false);
 
   useEffect(() => {
     if (user && user.user_id) {
@@ -65,7 +67,9 @@ export default function StudentHistory() {
           {/* Active Page Indicator */}
           <span className="text-[#4a0080] border-b-2 border-[#4a0080] pb-1 cursor-default">History</span>
           
-          <Link to="/reservation" className="text-slate-600 hover:text-[#7c1fa0] transition-colors">Reservation</Link>
+          <button onClick={() => setShowReservationSoon(true)} className="text-slate-600 hover:text-[#7c1fa0] transition-colors">
+            Reservation
+          </button>
           
           <button 
             onClick={handleLogout}
@@ -127,6 +131,13 @@ export default function StudentHistory() {
         <EditProfileModal 
           onClose={() => setShowEditProfile(false)} 
           onProfileUpdate={() => window.location.reload()} 
+        />
+      )}
+      {showReservationSoon && (
+        <FeatureComingSoonModal
+          onClose={() => setShowReservationSoon(false)}
+          title="Reservation"
+          message="This feature will be available soon!"
         />
       )}
     </div>

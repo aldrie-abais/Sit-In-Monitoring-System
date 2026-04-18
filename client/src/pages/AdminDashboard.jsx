@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SitInFormModal from '../components/modal/SitInFormModal';
 import SearchStudentModal from '../components/modal/SearchStudentModal';
+import FeatureComingSoonModal from '../components/modal/FeatureComingSoonModal';
 
 
 export default function AdminDashboard() {
@@ -12,6 +13,7 @@ export default function AdminDashboard() {
   // Modal States
   const [showSearch, setShowSearch] = useState(false);
   const [activeStudent, setActiveStudent] = useState(null);
+  const [showReportsSoon, setShowReportsSoon] = useState(false);
 
   // Dynamic Dashboard Data State
   const [dashboardData, setDashboardData] = useState({
@@ -124,7 +126,7 @@ export default function AdminDashboard() {
             <button onClick={() => setShowSearch(true)} className="text-slate-500 hover:text-[#4a0080] transition-colors cursor-pointer">Search</button>
             <Link to="/admin-dashboard/students" className="text-slate-500 hover:text-[#4a0080] transition-colors">Students</Link>
             <Link to="/admin-dashboard/records" className="text-slate-500 hover:text-[#4a0080] transition-colors">Records</Link>
-            <button className="text-slate-500 hover:text-[#4a0080] transition-colors">Reports</button>
+            <button onClick={() => setShowReportsSoon(true)} className="text-slate-500 hover:text-[#4a0080] transition-colors">Reports</button>
           </div>
           
           <button onClick={handleLogout} className="bg-[#4a0080] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-purple-900 transition-all shadow-md active:scale-95">
@@ -244,6 +246,14 @@ export default function AdminDashboard() {
             setActiveStudent(null);
             fetchDashboardData(); // <--- This refreshes the Active Sessions stat instantly when a student sits in!
           }}
+        />
+      )}
+
+      {showReportsSoon && (
+        <FeatureComingSoonModal
+          onClose={() => setShowReportsSoon(false)}
+          title="Reports"
+          message="This feature will be available soon!"
         />
       )}
 
