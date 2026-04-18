@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import EditProfileModal from '../components/modal/EditProfileModal';
 import NotificationDropdown from '../components/NotificationDropdown';
+import FeatureComingSoonModal from '../components/modal/FeatureComingSoonModal';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function Dashboard() {
   // Modals & Triggers
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0); 
+  const [showReservationSoon, setShowReservationSoon] = useState(false);
 
   // --- REAL-TIME STATES ---
   const [isActive, setIsActive] = useState(0);
@@ -105,7 +107,9 @@ export default function Dashboard() {
             Edit Profile
           </button>
           <Link to="/history" className="text-slate-600 hover:text-[#7c1fa0] transition-colors">History</Link>
-          <Link to="/reservation" className="text-slate-600 hover:text-[#7c1fa0] transition-colors">Reservation</Link>
+          <button onClick={() => setShowReservationSoon(true)} className="text-slate-600 hover:text-[#7c1fa0] transition-colors">
+            Reservation
+          </button>
           <button onClick={handleLogout} className="bg-[#c89b2a] text-white px-5 py-1.5 rounded-lg text-sm font-bold hover:bg-amber-600 transition-colors shadow-sm">
             Log out
           </button>
@@ -236,6 +240,14 @@ export default function Dashboard() {
         <EditProfileModal 
           onClose={() => setShowEditProfile(false)} 
           onProfileUpdate={() => setRefreshTrigger(prev => prev + 1)}
+        />
+      )}
+
+      {showReservationSoon && (
+        <FeatureComingSoonModal
+          onClose={() => setShowReservationSoon(false)}
+          title="Reservation"
+          message="This feature will be available soon!"
         />
       )}
     </div>
