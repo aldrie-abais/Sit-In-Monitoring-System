@@ -16,7 +16,11 @@ export default function SearchStudentModal({ onClose, onStudentFound }) {
     .then(res => res.json())
     .then(data => {
       if (data.status === 'success') {
-        onStudentFound(data.student); // Pass the data to the next modal
+        if (typeof onStudentFound === 'function') {
+          onStudentFound(data.student); // Pass the data to the next modal when provided
+        } else {
+          onClose();
+        }
       } else {
         setError(data.message);
       }
@@ -25,7 +29,7 @@ export default function SearchStudentModal({ onClose, onStudentFound }) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-[100] p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div className="fixed inset-0 flex items-center justify-center z-100 p-4 bg-slate-900/60 backdrop-blur-sm">
       <div className="bg-white w-full max-w-md rounded-2xl overflow-hidden shadow-2xl">
         <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200">
           <h2 className="text-xl font-bold text-slate-800">Search Student</h2>
