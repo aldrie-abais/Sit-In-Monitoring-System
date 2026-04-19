@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-export default function AddStudentModal({ onClose, onSuccess, isDark = false }) {
-  // 1. State matching the database columns
+export default function AddStudentModal({ onClose, onSuccess, isDark = false, mode = 'add', student = null }) {
   const [formData, setFormData] = useState({
     user_id: '',
     user_first_name: '',
@@ -9,8 +8,28 @@ export default function AddStudentModal({ onClose, onSuccess, isDark = false }) 
     user_middle_name: '',
     user_course_level: '',
     user_course_name: '',
+    user_email: '',
+    user_address: '',
+    remaining_sessions: 30,
     user_password: ''
   });
+
+  useEffect(() => {
+    if (student) {
+      setFormData({
+        user_id: student.user_id || '',
+        user_first_name: student.user_first_name || '',
+        user_last_name: student.user_last_name || '',
+        user_middle_name: student.user_middle_name || '',
+        user_course_level: student.user_course_level || '',
+        user_course_name: student.user_course_name || '',
+        user_email: student.user_email || '',
+        user_address: student.user_address || '',
+        remaining_sessions: student.remaining_sessions ?? 30,
+        user_password: ''
+      });
+    }
+  }, [student]);
 
   // 2. Handle input changes
   const handleChange = (e) => {
@@ -21,7 +40,9 @@ export default function AddStudentModal({ onClose, onSuccess, isDark = false }) 
   const handleSubmit = (e) => {
     e.preventDefault(); 
 
-    fetch('http://localhost:8080/api/admin_register.php', {
+    const endpoint = mode === 'edit' ? 'http://localhost:8080/api/edit_student.php' : 'http://localhost:8080/api/admin_register.php';
+
+    fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
@@ -40,13 +61,16 @@ export default function AddStudentModal({ onClose, onSuccess, isDark = false }) 
 
   // 4. Input map for the grid layout (matching your sleek design)
   const inputFields = [
-    { p: 'ID Number', name: 'user_id', col: 2 },
+    { p: 'ID Number', name: 'user_id', col: 2, disabled: mode === 'edit' },
     { p: 'First Name', name: 'user_first_name' },
     { p: 'Last Name', name: 'user_last_name' },
     { p: 'Middle Name (Optional)', name: 'user_middle_name' },
     { p: 'Year Level (e.g., 3)', name: 'user_course_level', t: 'number' },
     { p: 'Course', name: 'user_course_name', isSelect: true },
-    { p: 'Assign Password', name: 'user_password', t: 'password', col: 2 }
+    { p: 'Email', name: 'user_email', t: 'email' },
+    { p: 'Address', name: 'user_address', col: 2 },
+    { p: 'Remaining Sessions', name: 'remaining_sessions', t: 'number' },
+    { p: mode === 'edit' ? 'New Password (Leave blank to keep current)' : 'Assign Password', name: 'user_password', t: 'password', col: 2 }
   ];
 
   return (
@@ -61,10 +85,10 @@ export default function AddStudentModal({ onClose, onSuccess, isDark = false }) 
         {/* HEADER */}
         <div className={`sticky top-0 z-20 px-9 py-7 border-b backdrop-blur-md transition-colors duration-300 ${isDark ? 'bg-[#1a0830]/80 border-[#c89b2a]/20' : 'bg-white/80 border-slate-200'}`}>
           <p className={`font-serif text-3xl font-bold tracking-wide ${isDark ? 'text-white' : 'text-[#4a0080]'}`}>
-            Add New Student
+            {mode === 'edit' ? 'Edit Student' : 'Add New Student'}
           </p>
           <p className={`text-sm mt-1 font-medium ${isDark ? 'text-purple-200/70' : 'text-slate-500'}`}>
-            Register a new student account to the database.
+            {mode === 'edit' ? 'Update the selected student information.' : 'Register a new student account to the database.'}
           </p>
         </div>
 
@@ -117,7 +141,7 @@ export default function AddStudentModal({ onClose, onSuccess, isDark = false }) 
                   placeholder={p}
                   value={formData[name]}
                   onChange={handleChange}
-                  required={name !== 'user_middle_name'} // Middle name isn't strictly required
+                  required={name !== 'user_middle_name' && !(mode === 'edit' && name === 'user_password')}
                   className={baseClasses}
                 />
               );
