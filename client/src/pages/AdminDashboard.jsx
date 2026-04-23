@@ -3,12 +3,14 @@ import { useNavigate, Link } from 'react-router-dom';
 import SitInFormModal from '../components/modal/SitInFormModal';
 import SearchStudentModal from '../components/modal/SearchStudentModal';
 import FeatureComingSoonModal from '../components/modal/FeatureComingSoonModal';
+import EditAnnouncementModal from '../components/modal/EditAnnouncementModal';
 
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const [announcement, setAnnouncement] = useState('');
   const [announcementsList, setAnnouncementsList] = useState([]);
+    const [editingAnnouncement, setEditingAnnouncement] = useState(null);
   
   // Modal States
   const [showSearch, setShowSearch] = useState(false);
@@ -34,6 +36,10 @@ export default function AdminDashboard() {
         }
       })
       .catch(err => console.error("Failed to fetch announcements:", err));
+  };
+
+  const handleEditAnnouncement = (announcementItem) => {
+    setEditingAnnouncement(announcementItem);
   };
 
   const handlePostAnnouncement = () => {
@@ -160,7 +166,7 @@ export default function AdminDashboard() {
 
               {/* DYNAMIC PIE CHART */}
               <div className="text-center mb-2 text-xs font-bold text-slate-400 uppercase tracking-widest">Students by Course</div>
-              <div className="relative aspect-square max-w-[200px] mx-auto mt-2">
+              <div className="relative aspect-square max-w-50 mx-auto mt-2">
                 {/* The colored circle */}
                 <div className="w-full h-full rounded-full shadow-md" style={pieStyle}></div>
                 {/* The white inner circle to make it a "Donut" chart */}
@@ -209,9 +215,14 @@ export default function AdminDashboard() {
                 {announcementsList.length > 0 ? (
                   announcementsList.map((item) => (
                     <div key={item.id} className="p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
-                      <p className="font-bold text-[#4a0080] text-xs">
-                        {item.admin_name} • {new Date(item.date_posted).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
-                      </p>
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="font-bold text-[#4a0080] text-xs">
+                          {item.admin_name} • {new Date(item.date_posted).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+                        </p>
+                        <button onClick={() => handleEditAnnouncement(item)} className="text-xs font-bold text-[#7c1fa0] hover:text-[#4a0080] transition-colors">
+                          Edit
+                        </button>
+                      </div>
                       <p className="text-slate-600 text-sm mt-1 leading-relaxed whitespace-pre-wrap">
                         {item.content}
                       </p>
@@ -245,6 +256,17 @@ export default function AdminDashboard() {
           onSuccess={() => {
             setActiveStudent(null);
             fetchDashboardData(); // <--- This refreshes the Active Sessions stat instantly when a student sits in!
+          }}
+        />
+      )}
+
+      {editingAnnouncement && (
+        <EditAnnouncementModal
+          announcement={editingAnnouncement}
+          onClose={() => setEditingAnnouncement(null)}
+          onSuccess={() => {
+            setEditingAnnouncement(null);
+            fetchAnnouncements();
           }}
         />
       )}
