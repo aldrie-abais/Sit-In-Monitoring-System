@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SearchStudentModal from '../components/modal/SearchStudentModal';
 import FeatureComingSoonModal from '../components/modal/FeatureComingSoonModal';
+import SitInFormModal from '../components/modal/SitInFormModal';
 
 
 export default function AdminRecords() {
@@ -10,12 +11,17 @@ export default function AdminRecords() {
   const navigate = useNavigate();
   const [activeStudents, setActiveStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeStudent, setActiveStudent] = useState(null);
 
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [sessionToEnd, setSessionToEnd] = useState(null);
   const [feedbackText, setFeedbackText] = useState('');
 
   useEffect(() => {
+    fetchActiveStudents();
+  }, []);
+
+  const fetchActiveStudents = () => {
     // This script correctly filters for role='Student' AND user_is_active=1
     fetch('http://localhost:8080/api/get_active_students.php')
       .then(res => res.json())
@@ -23,7 +29,7 @@ export default function AdminRecords() {
         if (data.status === 'success') setActiveStudents(data.students);
       })
       .catch(err => console.error(err));
-  }, []);
+  };
 
   const handleLogout = () => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
@@ -62,7 +68,7 @@ const openFeedbackModal = (studentId) => {
     .then(res => res.json())
     .then(data => {
       if (data.status === 'success') {
-        setActiveStudents(prev => prev.filter(s => s.user_id !== sessionToEnd));
+        fetchActiveStudents();
         setFeedbackModalOpen(false);
       } else {
         alert("Error: " + data.message);
@@ -132,7 +138,7 @@ const openFeedbackModal = (studentId) => {
                       {student.user_first_name} {student.user_middle_name ? student.user_middle_name[0] + '.' : ''} {student.user_last_name}
                     </td>
                     <td className="p-4 text-slate-700 text-center">{student.user_course_name}</td>
-                    <td className="p-4 text-slate-700 text-center font-bold text-[#c89b2a]">{student.remaining_sessions}</td>
+                    <td className="p-4 text-center font-bold text-[#c89b2a]">{student.remaining_sessions}</td>
                     <td className="p-4 text-center">
                       <button onClick={() => openFeedbackModal(student.user_id)} className="...">
                         End Session
@@ -151,12 +157,12 @@ const openFeedbackModal = (studentId) => {
       </main>
 
       {feedbackModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-[110] p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 flex items-center justify-center z-110 p-4 bg-slate-900/60 backdrop-blur-sm">
           <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-6">
             <h2 className="text-xl font-bold text-[#4a0080] mb-2">End Session & Leave Feedback</h2>
             <p className="text-sm text-slate-500 mb-4">Leave an optional note about the student's lab usage.</p>
             <textarea 
-              className="w-full border border-slate-300 rounded-lg p-3 text-sm outline-none focus:border-[#4a0080] min-h-[100px]"
+              className="w-full border border-slate-300 rounded-lg p-3 text-sm outline-none focus:border-[#4a0080] min-h-25"
               placeholder="e.g., Left workstation messy, focused well..."
               value={feedbackText}
               onChange={(e) => setFeedbackText(e.target.value)}
@@ -172,7 +178,21 @@ const openFeedbackModal = (studentId) => {
       {showSearch && (
         <SearchStudentModal 
           onClose={() => setShowSearch(false)}
-          onStudentFound={() => setShowSearch(false)}
+          onStudentFound={(student) => {
+            setShowSearch(false);
+            setActiveStudent(student);
+          }}
+        />
+      )}
+
+      {activeStudent && (
+        <SitInFormModal
+          student={activeStudent}
+          onClose={() => setActiveStudent(null)}
+          onSuccess={() => {
+            setActiveStudent(null);
+            fetchActiveStudents();
+          }}
         />
       )}
 
