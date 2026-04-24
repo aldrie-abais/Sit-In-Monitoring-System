@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import AddStudentModal from '../components/modal/AddStudentModal';
 import SearchStudentModal from '../components/modal/SearchStudentModal';
 import FeatureComingSoonModal from '../components/modal/FeatureComingSoonModal';
+import SitInFormModal from '../components/modal/SitInFormModal';
 
 export default function AdminStudents() {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ export default function AdminStudents() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showReportsSoon, setShowReportsSoon] = useState(false);
+  const [activeStudent, setActiveStudent] = useState(null);
+  const [editingStudent, setEditingStudent] = useState(null);
 
   // 2. EXTRACT FETCH LOGIC SO WE CAN REUSE IT
   const fetchStudents = () => {
@@ -103,7 +106,10 @@ export default function AdminStudents() {
         {/* Action Buttons */}
         <div className="flex gap-3 mb-6">
             <button 
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              setEditingStudent(null);
+              setShowAddModal(true);
+            }}
             className="bg-[#4a0080] text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-purple-900 transition-all flex items-center gap-2"
             >
             <span>+</span> Add Student
@@ -168,7 +174,7 @@ export default function AdminStudents() {
                     <td className="p-4 text-slate-700 text-center">{student.user_course_name}</td>
                     <td className="p-4 text-slate-700 text-center">{student.user_remaining_sessions ?? student.remaining_sessions}</td>
                     <td className="p-4 text-center space-x-2">
-                      <button onClick={() => alert("Edit feature coming soon!")} className="bg-[#007bff] text-white px-4 py-1.5 rounded shadow-sm hover:bg-blue-700 font-medium text-xs transition-colors">
+                      <button onClick={() => { setEditingStudent(student); setShowAddModal(true); }} className="bg-[#007bff] text-white px-4 py-1.5 rounded shadow-sm hover:bg-blue-700 font-medium text-xs transition-colors">
                         Edit
                       </button>
                       <button onClick={() => alert("Delete feature coming soon!")} className="bg-[#dc3545] text-white px-4 py-1.5 rounded shadow-sm hover:bg-red-700 font-medium text-xs transition-colors">
@@ -196,9 +202,12 @@ export default function AdminStudents() {
       {/* 3. ADD THE MODAL COMPONENT DOWN HERE */}
       {showAddModal && (
         <AddStudentModal 
+          mode={editingStudent ? 'edit' : 'add'}
+          student={editingStudent}
           onClose={() => setShowAddModal(false)} 
           onSuccess={() => {
             setShowAddModal(false);
+            setEditingStudent(null);
             fetchStudents(); // Instantly re-fetches the table data so the new student appears!
           }} 
         />
@@ -207,7 +216,21 @@ export default function AdminStudents() {
       {showSearch && (
         <SearchStudentModal 
           onClose={() => setShowSearch(false)}
-          onStudentFound={() => setShowSearch(false)}
+          onStudentFound={(student) => {
+            setShowSearch(false);
+            setActiveStudent(student);
+          }}
+        />
+      )}
+
+      {activeStudent && (
+        <SitInFormModal
+          student={activeStudent}
+          onClose={() => setActiveStudent(null)}
+          onSuccess={() => {
+            setActiveStudent(null);
+            fetchStudents();
+          }}
         />
       )}
 
