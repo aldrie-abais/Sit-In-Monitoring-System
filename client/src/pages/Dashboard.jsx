@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import EditProfileModal from '../components/modal/EditProfileModal';
 import NotificationDropdown from '../components/NotificationDropdown';
 import FeatureComingSoonModal from '../components/modal/FeatureComingSoonModal';
+import AnnouncementDropdown from '../components/modal/AnnouncementDropdown';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -102,6 +103,7 @@ export default function Dashboard() {
         
         <div className="flex items-center gap-6 text-sm font-medium">
           <NotificationDropdown />
+          <AnnouncementDropdown />
           <Link to="/dashboard" className="text-slate-600 hover:text-[#7c1fa0] transition-colors">Home</Link>
           <button onClick={() => setShowEditProfile(true)} className="text-slate-600 hover:text-[#7c1fa0] transition-colors font-medium text-sm">
             Edit Profile
