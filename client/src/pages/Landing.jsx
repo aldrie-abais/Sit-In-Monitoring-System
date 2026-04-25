@@ -60,15 +60,15 @@ export default function Landing() {
       <a className={`font-semibold cursor-pointer text-sm transition-colors ${isDark ? 'text-purple-200/70 hover:text-[#c89b2a]' : 'text-slate-600 hover:text-[#7c1fa0]'}`}>About</a>
       
       <a onClick={() => setShowLogin(true)} className={`font-semibold cursor-pointer text-sm transition-colors ${isDark ? 'text-purple-200/70 hover:text-[#c89b2a]' : 'text-slate-600 hover:text-[#7c1fa0]'}`}>Log in</a>
-      
-      {/* Subtle Secondary Button (CANCEL/THEME) */}
-      <button onClick={() => setIsDark(!isDark)} className={`text-xl p-2 rounded-full transition-all duration-200 ${isDark ? 'bg-white/5 hover:bg-white/10' : 'bg-black/5 hover:bg-black/10'}`} title="Toggle Theme">
-        {isDark ? '☀️' : '🌙'}
-      </button>
 
       {/* Solid Confirmation Button (PRIMARY) */}
       <button onClick={() => setShowRegister(true)} className={`text-white font-bold px-6 py-2.5 rounded-full text-sm shadow-md hover:scale-105 active:scale-95 transition-all ${isDark ? 'bg-amber-600 hover:bg-amber-700' : 'bg-[#7c1fa0] hover:bg-purple-800'}`}>
         Register
+      </button>
+
+      {/* Subtle Secondary Button (CANCEL/THEME) */}
+      <button onClick={() => setIsDark(!isDark)} className={`text-xl p-2 rounded-full transition-all duration-200 ${isDark ? 'bg-white/5 hover:bg-white/10' : 'bg-black/5 hover:bg-black/10'}`} title="Toggle Theme">
+        {isDark ? '☀️' : '🌙'}
       </button>
     </nav>
 
