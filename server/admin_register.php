@@ -16,9 +16,9 @@ if (!isset($data->user_id) || !isset($data->user_last_name) || !isset($data->use
 
 try {
     $sql = "INSERT INTO users (user_id, user_first_name, user_middle_name, user_last_name, 
-                               user_course_name, user_course_level, user_password, 
+                               user_course_name, user_course_level, user_email, user_address, user_password, 
                                role, remaining_sessions, user_is_active) 
-            VALUES (:id, :fname, :mname, :lname, :course, :level, :pass, 'Student', 30, 0)";
+            VALUES (:id, :fname, :mname, :lname, :course, :level, :email, :address, :pass, 'Student', :remaining_sessions, 0)";
     
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -28,7 +28,11 @@ try {
         'lname' => $data->user_last_name,
         'course' => $data->user_course_name,
         'level' => $data->user_course_level,
+        'email' => $data->user_email ?? '',
+        'address' => $data->user_address ?? '',
         'pass' => password_hash($data->user_password, PASSWORD_DEFAULT)
+        ,
+        'remaining_sessions' => $data->remaining_sessions ?? 30
     ]);
 
     // Create notification for admitted student
