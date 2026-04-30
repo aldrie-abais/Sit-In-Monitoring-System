@@ -10,7 +10,7 @@ require 'db.php';
 
 try {
     // Fetches ALL users who have the role of 'Student'
-    $stmt = $pdo->prepare("SELECT user_id, user_first_name, user_middle_name, user_last_name, user_course_level, user_course_name, remaining_sessions, user_is_active FROM users WHERE role = 'Student'");
+    $stmt = $pdo->prepare("SELECT user_id, user_first_name, user_middle_name, user_last_name, user_course_level, user_course_name, user_email, user_address, remaining_sessions, user_is_active FROM users WHERE role = 'Student'");
     $stmt->execute();
     $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
