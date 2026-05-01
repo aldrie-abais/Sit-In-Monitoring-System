@@ -35,14 +35,7 @@ try {
             // Remove sensitive password before sending user data back to React
             unset($user['user_password']);
 
-            // 1. Set the user to active
-            $updateStmt = $pdo->prepare("UPDATE users SET user_is_active = 1 WHERE user_id = :id");
-            $updateStmt->execute(['id' => $user['user_id']]);
-
-            // 2. Fetch the fresh user data so React knows they are active
-            $user['user_is_active'] = 1;
-
-            // 3. Send the success response            
+            // Keep the stored active flag unchanged; admin controls session start and end.
             echo json_encode([
                 "status" => "success",
                 "message" => "Login successful",
