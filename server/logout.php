@@ -15,11 +15,8 @@ if (!isset($data->user_id)) {
 }
 
 try {
-    // Strictly just changes them to offline/inactive. No sessions are deducted!
-    $stmt = $pdo->prepare("UPDATE users SET user_is_active = 0 WHERE user_id = :id");
-    $stmt->execute(['id' => $data->user_id]);
-
-    echo json_encode(['status' => 'success', 'message' => 'Session ended successfully.']);
+    // Logout no longer mutates student session state. Admin manually ends sessions.
+    echo json_encode(['status' => 'success', 'message' => 'Logged out successfully.']);
 } catch(PDOException $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
