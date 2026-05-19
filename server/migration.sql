@@ -1,0 +1,466 @@
+-- Migration Script for sit_in_db
+-- Run this script in phpMyAdmin to create the entire database structure.
+-- This script contains the table creation and required seed data.
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- 1. Drop existing tables
+DROP TABLE IF EXISTS `system_logs`;
+DROP TABLE IF EXISTS `lab_softwares`;
+DROP TABLE IF EXISTS `softwares`;
+DROP TABLE IF EXISTS `reservation_pcs`;
+DROP TABLE IF EXISTS `reservations`;
+DROP TABLE IF EXISTS `sit_in_history`;
+DROP TABLE IF EXISTS `notifications`;
+DROP TABLE IF EXISTS `announcements`;
+DROP TABLE IF EXISTS `pcs`;
+DROP TABLE IF EXISTS `labs`;
+DROP TABLE IF EXISTS `users`;
+
+-- 2. Create tables
+CREATE TABLE `users` (
+  `user_id` varchar(50) NOT NULL,
+  `user_first_name` varchar(100) NOT NULL,
+  `user_last_name` varchar(100) NOT NULL,
+  `user_middle_name` varchar(100) DEFAULT NULL,
+  `user_course_level` varchar(20) NOT NULL,
+  `user_course_name` varchar(100) NOT NULL,
+  `user_email` varchar(100) NOT NULL,
+  `user_address` varchar(200) NOT NULL,
+  `user_password` varchar(255) NOT NULL,
+  `role` varchar(20) DEFAULT 'Student',
+  `user_is_active` tinyint(1) DEFAULT 0,
+  `remaining_sessions` int(11) DEFAULT 30,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `user_email` (`user_email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `announcements` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `admin_name` varchar(100) NOT NULL DEFAULT 'CCS Admin',
+  `content` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `notifications` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(50) NOT NULL,
+  `type` varchar(50) NOT NULL COMMENT 'session_started, session_ended, etc',
+  `message` text NOT NULL,
+  `is_read` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `is_read` (`is_read`),
+  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `labs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `total_pcs` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `pcs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lab_id` int(11) NOT NULL,
+  `pc_number` int(11) NOT NULL,
+  `row_position` int(11) NOT NULL,
+  `col_position` int(11) NOT NULL,
+  `status` enum('Available','Occupied','On-Maintenance') DEFAULT 'Available',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `lab_pc_unique` (`lab_id`,`pc_number`),
+  CONSTRAINT `pcs_ibfk_1` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `reservations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(50) NOT NULL,
+  `lab` varchar(50) NOT NULL,
+  `purpose` varchar(100) NOT NULL,
+  `reservation_date` date NOT NULL,
+  `reservation_time` time NOT NULL,
+  `status` varchar(20) DEFAULT 'Pending',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `reservation_pcs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `reservation_id` int(11) NOT NULL,
+  `pc_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `reservation_id` (`reservation_id`),
+  KEY `pc_id` (`pc_id`),
+  CONSTRAINT `reservation_pcs_ibfk_1` FOREIGN KEY (`reservation_id`) REFERENCES `reservations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `reservation_pcs_ibfk_2` FOREIGN KEY (`pc_id`) REFERENCES `pcs` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `sit_in_history` (
+  `history_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(50) NOT NULL,
+  `purpose` varchar(100) NOT NULL,
+  `lab` varchar(50) NOT NULL,
+  `time_in` timestamp NOT NULL DEFAULT current_timestamp(),
+  `time_out` timestamp NULL DEFAULT NULL,
+  `status` varchar(20) DEFAULT 'Active',
+  `sessions_left` int(11) DEFAULT NULL,
+  `admin_feedback` text DEFAULT NULL,
+  PRIMARY KEY (`history_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `sit_in_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `softwares` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `icon` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `lab_softwares` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lab_id` int(11) NOT NULL,
+  `software_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_lab_software` (`lab_id`,`software_id`),
+  KEY `software_id` (`software_id`),
+  CONSTRAINT `lab_softwares_ibfk_1` FOREIGN KEY (`lab_id`) REFERENCES `labs` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `lab_softwares_ibfk_2` FOREIGN KEY (`software_id`) REFERENCES `softwares` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `system_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `student_name` varchar(100) DEFAULT NULL,
+  `lab_name` varchar(50) DEFAULT NULL,
+  `pc_numbers` varchar(100) DEFAULT NULL,
+  `action` varchar(20) DEFAULT NULL,
+  `timestamp` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- 3. Seed Data
+
+-- Admin Account
+INSERT INTO `users` (`user_id`, `user_first_name`, `user_last_name`, `user_course_level`, `user_course_name`, `user_email`, `user_address`, `user_password`, `role`) VALUES 
+('admin123', 'CCS', 'Admin', 'N/A', 'N/A', 'admin@uc.edu.ph', 'University of Cebu', 'admin', 'Admin');
+
+-- Labs
+INSERT INTO `labs` (`id`, `name`, `total_pcs`) VALUES
+(1, 'Lab - 524', 45),
+(2, 'Lab - 526', 45),
+(3, 'Lab - 528', 45),
+(4, 'Lab - 530', 45),
+(5, 'Lab - 542', 45),
+(6, 'Lab - 544', 45);
+
+-- Softwares
+INSERT INTO `softwares` (`id`, `name`, `description`, `icon`) VALUES
+(1, 'Cisco Packet Tracer', 'A powerful network simulation tool that allows students to experiment with network behavior and build complex network models.', 'Cisco'),
+(2, 'Visual Studio Code', 'A lightweight and highly customizable source code editor supporting a vast ecosystem of programming languages and compiler extensions.', 'VSCode'),
+(3, 'Visual Studio', 'A comprehensive, enterprise-level Integrated Development Environment (IDE) optimized for complex C#, C++, and .NET applications.', 'VisualStudio'),
+(4, 'JGrasp', 'A specialized, lightweight IDE built to dynamically generate automatic software visualizations for Java, Python, and C++ languages.', 'JGrasp'),
+(5, 'IntelliJ IDEA Community', 'A premium, modern IDE tailored for Java and Kotlin developers, complete with high-efficiency automation and advanced refactoring tools.', 'IntelliJ'),
+(6, 'Microsoft Office', 'The industry-standard productivity suite, including Word, Excel, and PowerPoint, providing core document editing and spreadsheet tools.', 'Office');
+
+-- Lab Softwares mapping
+INSERT INTO `lab_softwares` (`lab_id`, `software_id`) VALUES
+(1, 1), (2, 1), (4, 1),
+(1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2),
+(3, 3), (5, 3),
+(1, 4), (2, 4),
+(4, 5), (6, 5),
+(1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6);
+
+-- PCs (Inserting 45 PCs per lab, forming a 6x8 grid where col=1..6, row=1..8)
+-- Using a quick generated block for the first few labs, you can also run the PHP seeder
+-- Here is a partial insert pattern for Lab 1 (you can run the provided PHP seeder instead of massive SQL inserts)
+-- A PHP seeder script is recommended for PCs, but we will provide a few rows here for completeness.
+
+-- PCs Seed Data
+INSERT INTO `pcs` (`lab_id`, `pc_number`, `row_position`, `col_position`, `status`) VALUES
+(1, 1, 1, 1, 'Available'),
+(1, 2, 2, 1, 'Available'),
+(1, 3, 3, 1, 'Available'),
+(1, 4, 4, 1, 'Available'),
+(1, 5, 5, 1, 'Available'),
+(1, 6, 6, 1, 'Available'),
+(1, 7, 7, 1, 'Available'),
+(1, 8, 8, 1, 'Available'),
+(1, 9, 1, 2, 'Available'),
+(1, 10, 2, 2, 'Available'),
+(1, 11, 3, 2, 'Available'),
+(1, 12, 4, 2, 'Available'),
+(1, 13, 5, 2, 'Available'),
+(1, 14, 6, 2, 'Available'),
+(1, 15, 7, 2, 'Available'),
+(1, 16, 8, 2, 'Available'),
+(1, 17, 1, 3, 'Available'),
+(1, 18, 2, 3, 'Available'),
+(1, 19, 3, 3, 'Available'),
+(1, 20, 4, 3, 'Available'),
+(1, 21, 5, 3, 'Available'),
+(1, 22, 6, 3, 'Available'),
+(1, 23, 7, 3, 'Available'),
+(1, 24, 8, 3, 'Available'),
+(1, 25, 1, 4, 'Available'),
+(1, 26, 2, 4, 'Available'),
+(1, 27, 3, 4, 'Available'),
+(1, 28, 4, 4, 'Available'),
+(1, 29, 5, 4, 'Available'),
+(1, 30, 6, 4, 'Available'),
+(1, 31, 7, 4, 'Available'),
+(1, 32, 8, 4, 'Available'),
+(1, 33, 1, 5, 'Available'),
+(1, 34, 2, 5, 'Available'),
+(1, 35, 3, 5, 'Available'),
+(1, 36, 4, 5, 'Available'),
+(1, 37, 5, 5, 'Available'),
+(1, 38, 6, 5, 'Available'),
+(1, 39, 7, 5, 'Available'),
+(1, 40, 8, 5, 'Available'),
+(1, 41, 1, 6, 'Available'),
+(1, 42, 2, 6, 'Available'),
+(1, 43, 3, 6, 'Available'),
+(1, 44, 4, 6, 'Available'),
+(1, 45, 5, 6, 'Available'),
+(2, 1, 1, 1, 'Available'),
+(2, 2, 2, 1, 'Available'),
+(2, 3, 3, 1, 'Available'),
+(2, 4, 4, 1, 'Available'),
+(2, 5, 5, 1, 'Available'),
+(2, 6, 6, 1, 'Available'),
+(2, 7, 7, 1, 'Available'),
+(2, 8, 8, 1, 'Available'),
+(2, 9, 1, 2, 'Available'),
+(2, 10, 2, 2, 'Available'),
+(2, 11, 3, 2, 'Available'),
+(2, 12, 4, 2, 'Available'),
+(2, 13, 5, 2, 'Available'),
+(2, 14, 6, 2, 'Available'),
+(2, 15, 7, 2, 'Available'),
+(2, 16, 8, 2, 'Available'),
+(2, 17, 1, 3, 'Available'),
+(2, 18, 2, 3, 'Available'),
+(2, 19, 3, 3, 'Available'),
+(2, 20, 4, 3, 'Available'),
+(2, 21, 5, 3, 'Available'),
+(2, 22, 6, 3, 'Available'),
+(2, 23, 7, 3, 'Available'),
+(2, 24, 8, 3, 'Available'),
+(2, 25, 1, 4, 'Available'),
+(2, 26, 2, 4, 'Available'),
+(2, 27, 3, 4, 'Available'),
+(2, 28, 4, 4, 'Available'),
+(2, 29, 5, 4, 'Available'),
+(2, 30, 6, 4, 'Available'),
+(2, 31, 7, 4, 'Available'),
+(2, 32, 8, 4, 'Available'),
+(2, 33, 1, 5, 'Available'),
+(2, 34, 2, 5, 'Available'),
+(2, 35, 3, 5, 'Available'),
+(2, 36, 4, 5, 'Available'),
+(2, 37, 5, 5, 'Available'),
+(2, 38, 6, 5, 'Available'),
+(2, 39, 7, 5, 'Available'),
+(2, 40, 8, 5, 'Available'),
+(2, 41, 1, 6, 'Available'),
+(2, 42, 2, 6, 'Available'),
+(2, 43, 3, 6, 'Available'),
+(2, 44, 4, 6, 'Available'),
+(2, 45, 5, 6, 'Available'),
+(3, 1, 1, 1, 'Available'),
+(3, 2, 2, 1, 'Available'),
+(3, 3, 3, 1, 'Available'),
+(3, 4, 4, 1, 'Available'),
+(3, 5, 5, 1, 'Available'),
+(3, 6, 6, 1, 'Available'),
+(3, 7, 7, 1, 'Available'),
+(3, 8, 8, 1, 'Available'),
+(3, 9, 1, 2, 'Available'),
+(3, 10, 2, 2, 'Available'),
+(3, 11, 3, 2, 'Available'),
+(3, 12, 4, 2, 'Available'),
+(3, 13, 5, 2, 'Available'),
+(3, 14, 6, 2, 'Available'),
+(3, 15, 7, 2, 'Available'),
+(3, 16, 8, 2, 'Available'),
+(3, 17, 1, 3, 'Available'),
+(3, 18, 2, 3, 'Available'),
+(3, 19, 3, 3, 'Available'),
+(3, 20, 4, 3, 'Available'),
+(3, 21, 5, 3, 'Available'),
+(3, 22, 6, 3, 'Available'),
+(3, 23, 7, 3, 'Available'),
+(3, 24, 8, 3, 'Available'),
+(3, 25, 1, 4, 'Available'),
+(3, 26, 2, 4, 'Available'),
+(3, 27, 3, 4, 'Available'),
+(3, 28, 4, 4, 'Available'),
+(3, 29, 5, 4, 'Available'),
+(3, 30, 6, 4, 'Available'),
+(3, 31, 7, 4, 'Available'),
+(3, 32, 8, 4, 'Available'),
+(3, 33, 1, 5, 'Available'),
+(3, 34, 2, 5, 'Available'),
+(3, 35, 3, 5, 'Available'),
+(3, 36, 4, 5, 'Available'),
+(3, 37, 5, 5, 'Available'),
+(3, 38, 6, 5, 'Available'),
+(3, 39, 7, 5, 'Available'),
+(3, 40, 8, 5, 'Available'),
+(3, 41, 1, 6, 'Available'),
+(3, 42, 2, 6, 'Available'),
+(3, 43, 3, 6, 'Available'),
+(3, 44, 4, 6, 'Available'),
+(3, 45, 5, 6, 'Available'),
+(4, 1, 1, 1, 'Available'),
+(4, 2, 2, 1, 'Available'),
+(4, 3, 3, 1, 'Available'),
+(4, 4, 4, 1, 'Available'),
+(4, 5, 5, 1, 'Available'),
+(4, 6, 6, 1, 'Available'),
+(4, 7, 7, 1, 'Available'),
+(4, 8, 8, 1, 'Available'),
+(4, 9, 1, 2, 'Available'),
+(4, 10, 2, 2, 'Available'),
+(4, 11, 3, 2, 'Available'),
+(4, 12, 4, 2, 'Available'),
+(4, 13, 5, 2, 'Available'),
+(4, 14, 6, 2, 'Available'),
+(4, 15, 7, 2, 'Available'),
+(4, 16, 8, 2, 'Available'),
+(4, 17, 1, 3, 'Available'),
+(4, 18, 2, 3, 'Available'),
+(4, 19, 3, 3, 'Available'),
+(4, 20, 4, 3, 'Available'),
+(4, 21, 5, 3, 'Available'),
+(4, 22, 6, 3, 'Available'),
+(4, 23, 7, 3, 'Available'),
+(4, 24, 8, 3, 'Available'),
+(4, 25, 1, 4, 'Available'),
+(4, 26, 2, 4, 'Available'),
+(4, 27, 3, 4, 'Available'),
+(4, 28, 4, 4, 'Available'),
+(4, 29, 5, 4, 'Available'),
+(4, 30, 6, 4, 'Available'),
+(4, 31, 7, 4, 'Available'),
+(4, 32, 8, 4, 'Available'),
+(4, 33, 1, 5, 'Available'),
+(4, 34, 2, 5, 'Available'),
+(4, 35, 3, 5, 'Available'),
+(4, 36, 4, 5, 'Available'),
+(4, 37, 5, 5, 'Available'),
+(4, 38, 6, 5, 'Available'),
+(4, 39, 7, 5, 'Available'),
+(4, 40, 8, 5, 'Available'),
+(4, 41, 1, 6, 'Available'),
+(4, 42, 2, 6, 'Available'),
+(4, 43, 3, 6, 'Available'),
+(4, 44, 4, 6, 'Available'),
+(4, 45, 5, 6, 'Available'),
+(5, 1, 1, 1, 'Available'),
+(5, 2, 2, 1, 'Available'),
+(5, 3, 3, 1, 'Available'),
+(5, 4, 4, 1, 'Available'),
+(5, 5, 5, 1, 'Available'),
+(5, 6, 6, 1, 'Available'),
+(5, 7, 7, 1, 'Available'),
+(5, 8, 8, 1, 'Available'),
+(5, 9, 1, 2, 'Available'),
+(5, 10, 2, 2, 'Available'),
+(5, 11, 3, 2, 'Available'),
+(5, 12, 4, 2, 'Available'),
+(5, 13, 5, 2, 'Available'),
+(5, 14, 6, 2, 'Available'),
+(5, 15, 7, 2, 'Available'),
+(5, 16, 8, 2, 'Available'),
+(5, 17, 1, 3, 'Available'),
+(5, 18, 2, 3, 'Available'),
+(5, 19, 3, 3, 'Available'),
+(5, 20, 4, 3, 'Available'),
+(5, 21, 5, 3, 'Available'),
+(5, 22, 6, 3, 'Available'),
+(5, 23, 7, 3, 'Available'),
+(5, 24, 8, 3, 'Available'),
+(5, 25, 1, 4, 'Available'),
+(5, 26, 2, 4, 'Available'),
+(5, 27, 3, 4, 'Available'),
+(5, 28, 4, 4, 'Available'),
+(5, 29, 5, 4, 'Available'),
+(5, 30, 6, 4, 'Available'),
+(5, 31, 7, 4, 'Available'),
+(5, 32, 8, 4, 'Available'),
+(5, 33, 1, 5, 'Available'),
+(5, 34, 2, 5, 'Available'),
+(5, 35, 3, 5, 'Available'),
+(5, 36, 4, 5, 'Available'),
+(5, 37, 5, 5, 'Available'),
+(5, 38, 6, 5, 'Available'),
+(5, 39, 7, 5, 'Available'),
+(5, 40, 8, 5, 'Available'),
+(5, 41, 1, 6, 'Available'),
+(5, 42, 2, 6, 'Available'),
+(5, 43, 3, 6, 'Available'),
+(5, 44, 4, 6, 'Available'),
+(5, 45, 5, 6, 'Available'),
+(6, 1, 1, 1, 'Available'),
+(6, 2, 2, 1, 'Available'),
+(6, 3, 3, 1, 'Available'),
+(6, 4, 4, 1, 'Available'),
+(6, 5, 5, 1, 'Available'),
+(6, 6, 6, 1, 'Available'),
+(6, 7, 7, 1, 'Available'),
+(6, 8, 8, 1, 'Available'),
+(6, 9, 1, 2, 'Available'),
+(6, 10, 2, 2, 'Available'),
+(6, 11, 3, 2, 'Available'),
+(6, 12, 4, 2, 'Available'),
+(6, 13, 5, 2, 'Available'),
+(6, 14, 6, 2, 'Available'),
+(6, 15, 7, 2, 'Available'),
+(6, 16, 8, 2, 'Available'),
+(6, 17, 1, 3, 'Available'),
+(6, 18, 2, 3, 'Available'),
+(6, 19, 3, 3, 'Available'),
+(6, 20, 4, 3, 'Available'),
+(6, 21, 5, 3, 'Available'),
+(6, 22, 6, 3, 'Available'),
+(6, 23, 7, 3, 'Available'),
+(6, 24, 8, 3, 'Available'),
+(6, 25, 1, 4, 'Available'),
+(6, 26, 2, 4, 'Available'),
+(6, 27, 3, 4, 'Available'),
+(6, 28, 4, 4, 'Available'),
+(6, 29, 5, 4, 'Available'),
+(6, 30, 6, 4, 'Available'),
+(6, 31, 7, 4, 'Available'),
+(6, 32, 8, 4, 'Available'),
+(6, 33, 1, 5, 'Available'),
+(6, 34, 2, 5, 'Available'),
+(6, 35, 3, 5, 'Available'),
+(6, 36, 4, 5, 'Available'),
+(6, 37, 5, 5, 'Available'),
+(6, 38, 6, 5, 'Available'),
+(6, 39, 7, 5, 'Available'),
+(6, 40, 8, 5, 'Available'),
+(6, 41, 1, 6, 'Available'),
+(6, 42, 2, 6, 'Available'),
+(6, 43, 3, 6, 'Available'),
+(6, 44, 4, 6, 'Available'),
+(6, 45, 5, 6, 'Available');
