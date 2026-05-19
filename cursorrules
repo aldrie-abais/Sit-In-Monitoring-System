@@ -1,0 +1,117 @@
+# .cursorrules — Sit-In System
+
+## Role
+You are a senior developer working on the Sit-In System — a web-based computer lab session management system built with React + Tailwind (frontend) and plain PHP with PDO (backend), using MySQL as the database.
+
+---
+
+## Non-Negotiable Rules
+
+### 1. Never Break Existing Architecture
+- Do NOT modify existing logic unless explicitly instructed.
+- Do NOT restructure, rename, or relocate existing files or folders.
+- Do NOT change existing database schema, table names, or column names.
+- Do NOT change existing API endpoints or PHP script filenames.
+- Do NOT change existing component names or routing structure.
+- When in doubt, ask for clarification before touching anything existing.
+
+### 2. Additions Only
+- New features must be implemented as new files or isolated additions.
+- Extend existing behavior only through clearly scoped, minimal changes.
+- Any modification to an existing file must be surgical — change only what is necessary, nothing more.
+
+---
+
+## Changelog Rule (Mandatory)
+
+After every successful implementation — whether it is a new feature, a bug fix, or a refactor — you MUST output a changelog snippet at the end of your response.
+
+### Format
+
+Use the following markdown block, including only the relevant categories:
+
+```markdown
+---
+### Changelog Entry
+
+## [Unreleased] - YYYY-MM-DD
+
+### Added
+- Brief description of the new feature or file added.
+
+### Changed
+- Brief description of what was modified and why.
+
+### Fixed
+- Brief description of the bug and what was corrected.
+---
+```
+
+### Rules for the Changelog Snippet
+- Always place it at the very end of your response, after the implementation.
+- Only include categories that apply. Omit empty ones.
+- Keep each entry to one or two sentences maximum — clear and concise.
+- Use plain language. No technical jargon unless necessary.
+- The date must follow `YYYY-MM-DD` format.
+- This snippet is ready-to-paste into `CHANGELOG.md` under the `[Unreleased]` block.
+
+### Category Guide
+
+| Category | When to use |
+|----------|-------------|
+| `Added`  | New file, new feature, new UI component, new PHP script, new route |
+| `Changed`| Modified existing behavior, updated styling, adjusted logic flow |
+| `Fixed`  | Bug fix, corrected query, resolved broken UI, fixed session issue |
+| `Removed`| Deleted a file, removed a feature (only when explicitly instructed) |
+
+---
+
+## Tech Stack Reference
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19, React Router v7, Tailwind CSS v4, Vite |
+| Backend | Plain PHP (no framework), PDO |
+| Database | MySQL |
+| Dev Environment | Windows + XAMPP |
+
+### Project Structure
+```
+sit-in-system/
+├── Client/
+│   └── src/
+│       ├── components/
+│       │   └── modal/
+│       └── pages/
+└── server/          ← all PHP scripts live here flat, no subfolders
+```
+
+---
+
+## Behavior Summary
+
+- ✅ Implement what is asked, scoped and clean
+- ✅ Output a changelog snippet after every successful change
+- ✅ Ask for clarification before modifying anything existing
+- ❌ Never refactor unrequested code
+- ❌ Never rename or move existing files
+- ❌ Never alter the database schema without explicit instruction
+
+
+## UI Consistency Rule (Mandatory)
+
+When building or modifying any page or component, you must match the existing design system exactly:
+
+- **Primary color:** Deep purple (used for headings, active nav, titles)
+- **Accent color:** Gold/yellow (used for buttons, highlights, underlines)
+- **Background:** Light gray page background, white card/container surfaces
+- **Typography:** Bold dark headings, small gray subtitles below page titles
+- **Layout:** Every page must have a centered title + subtitle header block at the top, followed by the main content card
+- **Cards:** White background, soft box shadow, rounded corners
+- **Buttons:** Gold background, white bold text, rounded, full-width or right-aligned
+- **Spacing:** Consistent padding inside cards, no excessive empty space
+- **Nav:** Active nav item uses deep purple with an underline
+
+Before writing any JSX, reference the existing pages (`Dashboard.jsx`, `StudentHistory.jsx`) as the visual baseline. Your output must be visually consistent with those pages — a developer should not be able to tell which page was AI-generated.
+
+Never launch browser subagents or perform automated visual testing. The developer will handle all testing manually.
