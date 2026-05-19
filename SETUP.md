@@ -1,6 +1,6 @@
-# Sit-In System — Developer Setup Guide
+# Sit-In System — Developer & Deployment Setup Guide
 
-> **Role:** New developer onboarding
+> **Role:** New developer onboarding / Deployment guide
 > **Rule:** Do not modify existing logic or architecture. This guide is for environment setup only.
 
 ---
@@ -35,6 +35,7 @@ cd sit-in-system
 1. Open **XAMPP Control Panel**
 2. Start **Apache** and **MySQL**
 3. Confirm both show green status indicators
+4. If Apache uses port 8080 (which is the default configuration for this project), ensure it is running on 8080. If not, configure XAMPP Apache to listen on port 8080.
 
 ---
 
@@ -42,7 +43,7 @@ cd sit-in-system
 
 ### 3a. Open phpMyAdmin
 
-Navigate to: [http://localhost/phpmyadmin](http://localhost/phpmyadmin)
+Navigate to: [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin) (or `http://localhost/phpmyadmin` if using default port).
 
 ### 3b. Create the Database
 
@@ -52,66 +53,21 @@ Click **New** in the left sidebar, enter the database name, then click **Create*
 Database name: sit_in_db
 ```
 
-### 3c. Create the Tables
+### 3c. Run the Migration Script
 
-Select `sit_in_db`, click the **SQL** tab, paste the following, and click **Go**.
+Instead of running PHP scripts individually, you can use the complete migration script provided in the repository.
 
-```sql
--- Users table
-CREATE TABLE users (
-  user_id INT(11) NOT NULL AUTO_INCREMENT,
-  user_first_name VARCHAR(20) NOT NULL,
-  user_last_name VARCHAR(20) NOT NULL,
-  user_middle_name VARCHAR(20) NOT NULL,
-  user_course_level VARCHAR(2) NOT NULL,
-  user_course_name VARCHAR(20) NOT NULL,
-  user_email VARCHAR(30) NOT NULL,
-  user_address VARCHAR(100) NOT NULL,
-  user_password VARCHAR(20) NOT NULL,
-  user_is_active TINYINT(1) DEFAULT 0,
-  is_created_at TIMESTAMP NOT NULL DEFAULT current_timestamp(),
-  is_updated_at TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  remaining_sessions INT(11) NOT NULL DEFAULT 30,
-  role VARCHAR(20) NOT NULL DEFAULT 'Student',
-  PRIMARY KEY (user_id)
-);
+1. Select `sit_in_db` in phpMyAdmin.
+2. Click the **Import** tab.
+3. Choose the file: `server/migration.sql` from your project folder.
+4. Click **Import** (or **Go**) at the bottom.
 
--- Sit-in history table
-CREATE TABLE sit_in_history (
-  history_id INT(11) NOT NULL AUTO_INCREMENT,
-  user_id INT(11) NOT NULL,
-  purpose VARCHAR(100) NOT NULL,
-  lab VARCHAR(50) NOT NULL,
-  time_in DATETIME DEFAULT current_timestamp(),
-  time_out DATETIME DEFAULT NULL,
-  status VARCHAR(20) DEFAULT 'Active',
-  sessions_left INT(11) DEFAULT NULL,
-  feedback TEXT DEFAULT NULL,
-  PRIMARY KEY (history_id)
-);
+This script will automatically:
+- Drop existing tables (if any)
+- Create all required tables in the correct order to respect foreign key constraints
+- Pre-populate all required configuration data (Default Admin, 6 Labs, PCs, Softwares, and Lab Software assignments)
 
--- Announcements table
-CREATE TABLE announcements (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  admin_name VARCHAR(100) DEFAULT 'CCS Admin',
-  content TEXT NOT NULL,
-  date_posted DATETIME DEFAULT current_timestamp(),
-  PRIMARY KEY (id)
-);
-
--- Notifications table
-CREATE TABLE notifications (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  user_id INT(11) NOT NULL,
-  type VARCHAR(50) NOT NULL,
-  message TEXT NOT NULL,
-  is_read TINYINT(4) DEFAULT 0,
-  created_at TIMESTAMP DEFAULT current_timestamp(),
-  PRIMARY KEY (id),
-  KEY user_id (user_id),
-  KEY is_read (is_read)
-);
-```
+> **Note:** The `migration.sql` script does NOT include dummy student data to ensure a clean slate for production.
 
 ---
 
@@ -121,7 +77,8 @@ Open `server/db.php` and update the credentials to match your local MySQL setup.
 
 ```php
 <?php
-$host = 'localhost';
+$host = '127.0.0.1';
+$port = '3306';      // Change to 3307 if your XAMPP MySQL uses it
 $db   = 'sit_in_db';
 $user = 'root';      // Default XAMPP MySQL user
 $pass = '';          // Default XAMPP MySQL password is empty
@@ -134,19 +91,21 @@ $charset = 'utf8mb4';
 
 ## 5. Serve the Backend via XAMPP
 
-Place the entire project folder inside XAMPP's web root directory.
+Place the entire project folder inside XAMPP's web root directory (if not already there).
+Or configure your Apache DocumentRoot to point to your project folder.
+The easiest method during development is using PHP's built in server from the `server` directory:
 
-```
-C:\xampp\htdocs\sit-in-system\
+```bash
+cd server
+php -S localhost:8080
 ```
 
 Your backend PHP scripts will then be accessible at:
-
 ```
-http://localhost/sit-in-system/server/
+http://localhost:8080/api.php
 ```
 
-> Example: `http://localhost/sit-in-system/server/login.php`
+> The frontend defaults to requesting `http://localhost:8080/api/` (proxied in Vite to `http://localhost:8080/`).
 
 ---
 
@@ -161,17 +120,7 @@ cd Client
 npm install
 ```
 
-### 6b. Configure the API Base URL
-
-The frontend communicates with the PHP backend via HTTP. Locate where the API base URL is defined in the source (likely in `App.jsx` or a constants file) and confirm it points to your local backend:
-
-```
-http://localhost/sit-in-system/server/
-```
-
-> If no central config exists, search for `localhost` or `api.php` across the `src/` folder to find where requests are made.
-
-### 6c. Start the Development Server
+### 6b. Start the Development Server
 
 ```bash
 npm run dev
@@ -187,14 +136,22 @@ Open that URL in your browser.
 
 ---
 
-## 7. Verify the Setup
+## 7. Access the System
+
+- **Student Portal:** Access the landing page at `http://localhost:5173`
+- **Admin Dashboard:** Access at `http://localhost:5173/admin` or login using the default admin credentials:
+  - **Email / ID:** admin123
+  - **Password:** admin
+
+---
+
+## 8. Verify the Setup
 
 Work through this checklist to confirm everything is running correctly.
 
 - [ ] XAMPP Apache and MySQL are both running
-- [ ] `sit_in_db` database exists with all 4 tables (`users`, `sit_in_history`, `announcements`, `notifications`)
+- [ ] `sit_in_db` database exists with all tables created from `migration.sql`
 - [ ] `server/db.php` credentials match your local MySQL
-- [ ] Project folder is inside `C:\xampp\htdocs\`
 - [ ] `npm install` completed without errors inside `Client/`
 - [ ] `npm run dev` starts without errors
 - [ ] Landing page loads at `http://localhost:5173`
@@ -202,74 +159,16 @@ Work through this checklist to confirm everything is running correctly.
 
 ---
 
-## Project Structure Reference
-
-```
-sit-in-system/
-├── Client/                      # React frontend
-│   ├── public/
-│   └── src/
-│       ├── assets/
-│       ├── components/
-│       │   └── modal/
-│       │       └── NotificationDropdown.jsx
-│       ├── pages/
-│       │   ├── AdminDashboard.jsx
-│       │   ├── AdminRecords.jsx
-│       │   ├── AdminStudents.jsx
-│       │   ├── Dashboard.jsx
-│       │   ├── Landing.jsx
-│       │   └── StudentHistory.jsx
-│       ├── uploads/
-│       ├── App.css
-│       ├── App.jsx
-│       ├── index.css
-│       └── main.jsx
-│
-└── server/                      # PHP backend (plain PHP + PDO)
-    ├── db.php                   ← Database connection config
-    ├── api.php
-    ├── login.php
-    ├── register.php
-    ├── logout.php
-    ├── check_session.php
-    ├── end_session.php
-    ├── sit_in.php
-    ├── get_active_students.php
-    ├── get_all_students.php
-    ├── get_announcements.php
-    ├── get_dashboard_stats.php
-    ├── get_notifications.php
-    ├── get_student_history.php
-    ├── post_announcement.php
-    ├── edit_announcement.php
-    ├── edit_profile.php
-    ├── edit_student.php
-    ├── search_student.php
-    ├── mark_notification_read.php
-    ├── reset_all_sessions.php
-    ├── init_notifications_table.php
-    ├── admin_register.php
-    └── ...
-```
-
----
-
 ## Common Issues
 
-**Apache port conflict**
-If Apache fails to start, port 80 may be in use (commonly by IIS or another server).
-Go to XAMPP → Apache → Config → `httpd.conf` and change `Listen 80` to `Listen 8080`. Update your backend URL accordingly.
+**Database connection failed (Target machine actively refused it)**
+Ensure MySQL is running in XAMPP. Double check the `$port` value in `db.php`. Some XAMPP installations use `3306` (default), while others use `3307`.
 
 **MySQL access denied**
 Double-check the `$user` and `$pass` values in `db.php`. Default XAMPP credentials are `root` / *(empty)*.
 
 **CORS errors in the browser**
-The PHP scripts may need CORS headers. Check if `api.php` or individual scripts already include:
-```php
-header("Access-Control-Allow-Origin: http://localhost:5173");
-```
-Do not add or modify these headers without confirming with the team — this guide is read-only for existing logic.
+The PHP scripts use wildcard `Access-Control-Allow-Origin: *` to prevent CORS issues. Ensure the PHP development server is running on the correct port (8080).
 
 **`npm install` fails**
 Ensure Node.js v18+ is installed. Run `node -v` to confirm.
