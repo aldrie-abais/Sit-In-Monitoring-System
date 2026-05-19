@@ -34,7 +34,7 @@ export default function SitInFormModal({ student, onClose, onSuccess }) {
     .slice(0, 5);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/get_labs.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_labs.php`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -43,7 +43,7 @@ export default function SitInFormModal({ student, onClose, onSuccess }) {
       })
       .catch(err => console.error(err));
 
-    fetch('http://localhost:8080/api/get_softwares.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_softwares.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -55,7 +55,7 @@ export default function SitInFormModal({ student, onClose, onSuccess }) {
 
   useEffect(() => {
     if (selectedLabObj) {
-      fetch('http://localhost:8080/api/get_pcs_by_lab.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/get_pcs_by_lab.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lab_id: selectedLabObj.id })
@@ -102,7 +102,7 @@ export default function SitInFormModal({ student, onClose, onSuccess }) {
       return;
     }
 
-    fetch('http://localhost:8080/api/sit_in.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/sit_in.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

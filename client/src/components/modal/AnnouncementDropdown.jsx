@@ -12,7 +12,7 @@ export default function AnnouncementDropdown() {
   const storageKey = useMemo(() => `announcement_last_seen_${savedUser.user_id || 'guest'}`, [savedUser.user_id]);
 
   const fetchAnnouncements = () => {
-    fetch('http://localhost:8080/api/get_announcements.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_announcements.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {

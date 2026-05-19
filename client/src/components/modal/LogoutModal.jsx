@@ -33,12 +33,12 @@ export default function LogoutModal({ isOpen, onClose, onConfirm }) {
         setLoading(false);
       } else {
         Promise.all([
-          fetch('http://localhost:8080/api/get_student_history.php', {
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/get_student_history.php`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: user.user_id })
           }).then(res => res.json()),
-          fetch('http://localhost:8080/api/check_session.php', {
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/check_session.php`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: user.user_id })

@@ -25,7 +25,7 @@ export default function AdminStudents() {
 
   // 2. EXTRACT FETCH LOGIC SO WE CAN REUSE IT
   const fetchStudents = () => {
-    fetch('http://localhost:8080/api/get_all_students.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_all_students.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -43,7 +43,7 @@ export default function AdminStudents() {
   const handleLogout = () => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
     if (savedUser && savedUser.user_id) {
-      fetch('http://localhost:8080/api/logout.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/logout.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: savedUser.user_id })
@@ -64,7 +64,7 @@ export default function AdminStudents() {
 
   const handleResetAll = () => {
     if (window.confirm("ARE YOU SURE? This will reset EVERY student to 30 sessions!")) {
-      fetch('http://localhost:8080/api/reset_all_sessions.php', { method: 'POST' })
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/reset_all_sessions.php`, { method: 'POST' })
         .then(res => res.json())
         .then(data => {
           if (data.status === 'success') {

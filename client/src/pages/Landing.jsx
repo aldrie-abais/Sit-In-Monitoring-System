@@ -15,7 +15,7 @@ export default function Landing() {
   }, [isDark])
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/api.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api.php`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Data from PHP:", data);
@@ -150,7 +150,7 @@ function LeaderboardSection({ isDark }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/get_leaderboard.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_leaderboard.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') setLeaderboard(data.data);
@@ -191,7 +191,7 @@ function LeaderboardSection({ isDark }) {
 
   const getAvatar = (entry) =>
     entry.profile_picture
-      ? `http://localhost:8080/api/${entry.profile_picture}`
+      ? `${import.meta.env.VITE_API_BASE_URL}/${entry.profile_picture}`
       : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(entry.name)}`;
 
   const top3 = leaderboard.slice(0, 3);

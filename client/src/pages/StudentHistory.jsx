@@ -30,7 +30,7 @@ export default function StudentHistory() {
 
   useEffect(() => {
     if (user && user.user_id) {
-      fetch('http://localhost:8080/api/get_student_history.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/get_student_history.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.user_id })
@@ -53,7 +53,7 @@ export default function StudentHistory() {
   const handleLogout = (feedback) => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
     if (savedUser && savedUser.user_id) {
-      fetch('http://localhost:8080/api/logout.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/logout.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: savedUser.user_id, feedback: feedback || '' })

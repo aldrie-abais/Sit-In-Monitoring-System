@@ -38,7 +38,7 @@ export default function EditStudentModal({ onClose, onSuccess, student }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetch('http://localhost:8080/api/edit_student.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/edit_student.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)

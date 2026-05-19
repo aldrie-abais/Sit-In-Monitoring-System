@@ -36,7 +36,7 @@ export default function AdminDashboard() {
   const pieColors = ['#4a0080', '#c89b2a', '#d8b4fe', '#fde047', '#94a3b8'];
 
   const fetchAnnouncements = () => {
-    fetch('http://localhost:8080/api/get_announcements.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_announcements.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
       return;
     }
     
-    fetch('http://localhost:8080/api/post_announcement.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/post_announcement.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: announcement })
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
   };
 
   const fetchDashboardData = () => {
-    fetch('http://localhost:8080/api/get_dashboard_stats.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_dashboard_stats.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
     if (savedUser && savedUser.user_id) {
-      fetch('http://localhost:8080/api/logout.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/logout.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: savedUser.user_id })

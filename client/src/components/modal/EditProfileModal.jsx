@@ -8,7 +8,7 @@ export default function EditProfileModal({ onClose, isDark = false, onProfileUpd
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(
     savedUser.profile_picture 
-      ? `http://localhost:8080/api/${savedUser.profile_picture}`
+      ? `${import.meta.env.VITE_API_BASE_URL}/${savedUser.profile_picture}`
       : `https://api.dicebear.com/7.x/avataaars/svg?seed=${savedUser.user_first_name || 'Felix'}`
   );
 
@@ -52,7 +52,7 @@ export default function EditProfileModal({ onClose, isDark = false, onProfileUpd
     }
 
     const saveProfileData = () => {
-      fetch('http://localhost:8080/api/edit_profile.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/edit_profile.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -80,7 +80,7 @@ export default function EditProfileModal({ onClose, isDark = false, onProfileUpd
       uploadData.append('user_id', formData.user_id);
       uploadData.append('profile_picture', selectedFile);
 
-      fetch('http://localhost:8080/api/update_profile_picture.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/update_profile_picture.php`, {
         method: 'POST',
         body: uploadData
       })

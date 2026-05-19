@@ -17,7 +17,7 @@ export default function AddSoftwareModal({ onClose, onSuccess }) {
 
   // Fetch Labs on mount
   useEffect(() => {
-    fetch('http://localhost:8080/api/get_labs.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_labs.php`)
       .then(res => res.json())
       .then(resData => {
         if (resData.success && resData.data) {
@@ -58,7 +58,7 @@ export default function AddSoftwareModal({ onClose, onSuccess }) {
 
     try {
       // 1. Add the software to the database
-      const softwareResponse = await fetch('http://localhost:8080/api/add_software.php', {
+      const softwareResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/add_software.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -81,7 +81,7 @@ export default function AddSoftwareModal({ onClose, onSuccess }) {
 
       // 2. Map lab deployments using assign_software_to_lab.php
       const deploymentPromises = selectedLabs.map(labId => {
-        return fetch('http://localhost:8080/api/assign_software_to_lab.php', {
+        return fetch(`${import.meta.env.VITE_API_BASE_URL}/assign_software_to_lab.php`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

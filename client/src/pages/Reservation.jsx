@@ -37,14 +37,14 @@ export default function Reservation() {
   const [selectedRequest, setSelectedRequest] = useState(null);
 
   const fetchLabs = () => {
-    fetch('http://localhost:8080/api/get_labs.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_labs.php`)
       .then(res => res.json())
       .then(data => { if (data.success) setLabs(data.data); })
       .catch(err => console.error(err));
   };
 
   const fetchSoftwares = () => {
-    fetch('http://localhost:8080/api/get_softwares.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_softwares.php`)
       .then(res => res.json())
       .then(data => { if (data.status === 'success') setSoftwares(data.data); })
       .catch(err => console.error(err));
@@ -52,7 +52,7 @@ export default function Reservation() {
 
   const fetchReservations = () => {
     if (user && user.user_id) {
-      fetch('http://localhost:8080/api/get_reservations.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/get_reservations.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.user_id })
@@ -72,7 +72,7 @@ export default function Reservation() {
   const handleLogout = (feedback) => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
     if (savedUser && savedUser.user_id) {
-      fetch('http://localhost:8080/api/logout.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/logout.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: savedUser.user_id, feedback: feedback || '' })
@@ -96,7 +96,7 @@ export default function Reservation() {
     setSelectedLab(lab);
     
     // Fetch PCs for this lab
-    fetch('http://localhost:8080/api/get_pcs_by_lab.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_pcs_by_lab.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lab_id: lab.id })
@@ -132,7 +132,7 @@ export default function Reservation() {
     e.preventDefault();
     if (!user || !user.user_id || !selectedLab || confirmedPcIds.length === 0) return;
 
-    fetch('http://localhost:8080/api/create_reservation.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/create_reservation.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
