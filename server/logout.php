@@ -15,7 +15,15 @@ if (!isset($data->user_id)) {
 }
 
 try {
-    // Logout no longer mutates student session state. Admin manually ends sessions.
+    // If feedback is provided, save it to the most recent sit_in_history entry for this student
+    if (isset($data->feedback) && !empty(trim($data->feedback))) {
+        $stmt = $pdo->prepare("UPDATE sit_in_history SET feedback = :feedback WHERE user_id = :id ORDER BY history_id DESC LIMIT 1");
+        $stmt->execute([
+            'feedback' => trim($data->feedback),
+            'id' => $data->user_id
+        ]);
+    }
+
     echo json_encode(['status' => 'success', 'message' => 'Logged out successfully.']);
 } catch(PDOException $e) {
     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

@@ -19,13 +19,13 @@ try {
     $stmt2->execute(['id' => $data->user_id]);
     $newBalance = $stmt2->fetchColumn();
 
-    // 3. Mark the active history record as Completed, add Time Out, Balance, and Feedback
-    $feedback = isset($data->feedback) && !empty($data->feedback) ? $data->feedback : "No feedback provided.";
+    // 3. Mark the active history record as Completed, add Time Out, Balance, and admin_feedback
+    $admin_feedback = isset($data->feedback) && !empty(trim($data->feedback)) ? trim($data->feedback) : null;
     
-    $stmt3 = $pdo->prepare("UPDATE sit_in_history SET time_out = NOW(), status = 'Completed', sessions_left = :balance, feedback = :feedback WHERE user_id = :id AND status = 'Active' ORDER BY history_id DESC LIMIT 1");
+    $stmt3 = $pdo->prepare("UPDATE sit_in_history SET time_out = NOW(), status = 'Completed', sessions_left = :balance, admin_feedback = :admin_feedback WHERE user_id = :id AND status = 'Active' ORDER BY history_id DESC LIMIT 1");
     $stmt3->execute([
         'balance' => $newBalance,
-        'feedback' => $feedback,
+        'admin_feedback' => $admin_feedback,
         'id' => $data->user_id
     ]);
 
