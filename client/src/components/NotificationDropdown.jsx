@@ -64,6 +64,24 @@ export default function NotificationDropdown() {
     .catch(err => console.error("Failed to mark notification as read:", err));
   };
 
+  const handleMarkAllAsRead = (e) => {
+    e.stopPropagation();
+    if (!savedUser.user_id) return;
+
+    fetch('http://localhost:8080/api/mark_all_notifications_read.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: savedUser.user_id })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success') {
+        fetchNotifications();
+      }
+    })
+    .catch(err => console.error("Failed to mark all as read:", err));
+  };
+
   const getNotificationIcon = (type) => {
     switch(type) {
       case 'admitted':
@@ -135,11 +153,21 @@ export default function NotificationDropdown() {
           {/* Header */}
           <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
             <h3 className="font-semibold text-slate-800">Notifications</h3>
-            {unreadCount > 0 && (
-              <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full font-semibold">
-                {unreadCount} new
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {unreadCount > 0 && (
+                <>
+                  <button
+                    onClick={handleMarkAllAsRead}
+                    className="text-xs text-[#4a0080] hover:text-[#7c1fa0] font-semibold transition-colors"
+                  >
+                    Mark All as Read
+                  </button>
+                  <span className="text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full font-bold">
+                    {unreadCount}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Notifications List */}

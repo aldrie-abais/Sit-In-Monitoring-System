@@ -10,6 +10,9 @@ import ProtectedRoute from './components/modal/ProtectedRoute'
 import AdminStudents from './pages/AdminStudents'
 import AdminRecords from './pages/AdminRecords'
 import StudentHistory from './pages/StudentHistory'
+import Reservation from './pages/Reservation'
+import AdminReservation from './pages/AdminReservation'
+import AdminSoftware from './pages/AdminSoftware'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -40,6 +43,16 @@ function App() {
           } 
         />
 
+        {/* NEW: Reservation Page */}
+        <Route 
+          path="/reservation" 
+          element={
+              <ProtectedRoute allowedRoles={['Student']}>
+                  <Reservation />
+              </ProtectedRoute>
+          } 
+        />
+
         {/* Main Admin Dashboard */}
         <Route 
           path="/admin-dashboard" 
@@ -50,6 +63,26 @@ function App() {
           } 
         /> 
 
+        {/* Admin Reservation Page */}
+        <Route 
+          path="/admin-dashboard/reservation" 
+          element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <AdminReservation />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Admin Software Page */}
+        <Route 
+          path="/admin-dashboard/software" 
+          element={
+            <ProtectedRoute allowedRoles={['Admin']}>
+              <AdminSoftware />
+            </ProtectedRoute>
+          } 
+        />
+
         {/* Admin Students List (Nested URL) */}
         <Route 
           path="/admin-dashboard/students" 
@@ -59,7 +92,7 @@ function App() {
             </ProtectedRoute>
           } 
         /> 
-
+        
         <Route 
           path="/admin-dashboard/records" 
           element={

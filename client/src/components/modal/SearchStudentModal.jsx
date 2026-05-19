@@ -5,6 +5,7 @@ export default function SearchStudentModal({ onClose, onStudentFound }) {
   const [error, setError] = useState('');
   const [students, setStudents] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const isDark = localStorage.getItem('isDark') === 'true';
 
   useEffect(() => {
     fetch('http://localhost:8080/api/get_all_students.php')
@@ -69,11 +70,11 @@ export default function SearchStudentModal({ onClose, onStudentFound }) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-100 p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-md rounded-2xl overflow-visible shadow-2xl min-h-80">
-        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-200">
-          <h2 className="text-xl font-bold text-slate-800">Search Student</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-red-500 font-bold text-xl">✕</button>
+    <div className={`fixed inset-0 flex items-center justify-center z-100 p-4 backdrop-blur-sm ${isDark ? 'bg-[#0f051e]/80' : 'bg-slate-900/60'}`}>
+      <div className={`w-full max-w-md rounded-2xl overflow-visible shadow-2xl min-h-80 ${isDark ? 'bg-[#1e0838] border border-purple-500/20' : 'bg-white'}`}>
+        <div className={`flex justify-between items-center px-6 py-4 border-b ${isDark ? 'border-purple-500/20' : 'border-slate-200'}`}>
+          <h2 className={`text-xl font-bold ${isDark ? 'text-[#c89b2a]' : 'text-slate-800'}`}>Search Student</h2>
+          <button onClick={onClose} className={`font-bold text-xl ${isDark ? 'text-purple-400 hover:text-red-400' : 'text-slate-400 hover:text-red-500'}`}>✕</button>
         </div>
         
         <form onSubmit={handleSearch} className="p-6 flex flex-col items-center">
@@ -81,7 +82,7 @@ export default function SearchStudentModal({ onClose, onStudentFound }) {
             <input 
               type="text" 
               placeholder="Search ID..." 
-              className="w-full text-center border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:border-[#4a0080] focus:ring-1 focus:ring-[#4a0080]"
+              className={`w-full text-center border rounded-lg px-4 py-3 focus:outline-none ${isDark ? 'bg-white/5 border-purple-500/20 text-purple-100 placeholder-purple-300/40 focus:border-[#c89b2a]' : 'border-slate-300 focus:border-[#4a0080] focus:ring-1 focus:ring-[#4a0080]'}`}
               value={searchId}
               onChange={(e) => setSearchId(e.target.value)}
               onFocus={() => setShowSuggestions(true)}
@@ -90,16 +91,16 @@ export default function SearchStudentModal({ onClose, onStudentFound }) {
             />
 
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute left-0 right-0 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg z-20 overflow-hidden">
+              <div className={`absolute left-0 right-0 mt-1 rounded-lg border shadow-lg z-20 overflow-hidden ${isDark ? 'bg-[#1e0838] border-purple-500/20' : 'bg-white border-slate-200'}`}>
                 {suggestions.map((student) => (
                   <button
                     key={student.user_id}
                     type="button"
                     onMouseDown={() => handleSuggestionSelect(student.user_id)}
-                    className="w-full px-3 py-2 text-left hover:bg-slate-50"
+                    className={`w-full px-3 py-2 text-left ${isDark ? 'hover:bg-white/5' : 'hover:bg-slate-50'}`}
                   >
-                    <p className="text-sm font-semibold text-slate-800">{student.user_id}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className={`text-sm font-semibold ${isDark ? 'text-purple-100' : 'text-slate-800'}`}>{student.user_id}</p>
+                    <p className={`text-xs ${isDark ? 'text-purple-400' : 'text-slate-500'}`}>
                       {student.user_first_name} {student.user_middle_name ? `${student.user_middle_name[0]}. ` : ''}{student.user_last_name}
                     </p>
                   </button>

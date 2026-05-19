@@ -42,13 +42,7 @@ export default function AnnouncementDropdown() {
   };
 
   const toggleDropdown = () => {
-    setShowDropdown(prev => {
-      const next = !prev;
-      if (next) {
-        markAllAsSeen();
-      }
-      return next;
-    });
+    setShowDropdown(prev => !prev);
   };
 
   const formatDate = (dateString) => {
@@ -88,11 +82,24 @@ export default function AnnouncementDropdown() {
         <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-slate-200 z-50">
           <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
             <h3 className="font-semibold text-slate-800">Announcements</h3>
-            {unreadCount > 0 && (
-              <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full font-semibold">
-                {unreadCount} new
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {unreadCount > 0 && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      markAllAsSeen();
+                    }}
+                    className="text-xs text-[#4a0080] hover:text-[#7c1fa0] font-semibold transition-colors"
+                  >
+                    Mark All as Read
+                  </button>
+                  <span className="text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-full font-bold">
+                    {unreadCount}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
           <div className="max-h-96 overflow-y-auto">
             {announcements.length > 0 ? (

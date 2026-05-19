@@ -4,6 +4,8 @@ import SitInFormModal from '../components/modal/SitInFormModal';
 import SearchStudentModal from '../components/modal/SearchStudentModal';
 import FeatureComingSoonModal from '../components/modal/FeatureComingSoonModal';
 import EditAnnouncementModal from '../components/modal/EditAnnouncementModal';
+import LogoutModal from '../components/modal/LogoutModal';
+import AnalyticsCharts from '../components/AnalyticsCharts';
 
 
 export default function AdminDashboard() {
@@ -16,6 +18,12 @@ export default function AdminDashboard() {
   const [showSearch, setShowSearch] = useState(false);
   const [activeStudent, setActiveStudent] = useState(null);
   const [showReportsSoon, setShowReportsSoon] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isDark, setIsDark] = useState(() => localStorage.getItem('isDark') === 'true');
+
+  useEffect(() => {
+    localStorage.setItem('isDark', isDark);
+  }, [isDark]);
 
   // Dynamic Dashboard Data State
   const [dashboardData, setDashboardData] = useState({
@@ -112,31 +120,39 @@ export default function AdminDashboard() {
     : { background: '#e2e8f0' }; // Empty gray circle if no students exist
 
   return (
-    <div className="h-screen w-full bg-slate-50 font-sans text-slate-800 flex flex-col overflow-hidden">
+    <div className={`h-screen w-full font-sans flex flex-col overflow-hidden transition-colors duration-300 ${isDark ? 'bg-[#0f0520] text-purple-100' : 'bg-slate-50 text-slate-800'}`}>
       
       {/* NAVIGATION BAR */}
-      <nav className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between shadow-sm shrink-0">
+      <nav className={`px-8 py-4 flex items-center justify-between shadow-sm shrink-0 border-b transition-colors duration-300 ${isDark ? 'bg-[#1e0838]/80 border-purple-500/20 text-white' : 'bg-white border-slate-200 text-slate-800'}`}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-[#4a0080] rounded-lg flex items-center justify-center shadow-md">
             <span className="text-white font-serif text-xl font-bold">UC</span>
           </div>
           <div>
-            <h1 className="font-serif text-xl font-bold tracking-tight text-[#4a0080]">CCS Sit-In Monitoring</h1>
+            <h1 className={`font-serif text-xl font-bold tracking-tight ${isDark ? 'text-[#c89b2a]' : 'text-[#4a0080]'}`}>CCS Sit-In Monitoring</h1>
             <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#c89b2a] -mt-1">Administrator Panel</p>
           </div>
         </div>
-
+ 
         <div className="flex items-center gap-8">
           <div className="hidden md:flex items-center gap-6 text-sm font-semibold">
-            <span className="text-[#4a0080] border-b-2 border-[#4a0080] pb-1 cursor-default">Home</span>
-            <button onClick={() => setShowSearch(true)} className="text-slate-500 hover:text-[#4a0080] transition-colors cursor-pointer">Search</button>
-            <Link to="/admin-dashboard/students" className="text-slate-500 hover:text-[#4a0080] transition-colors">Students</Link>
-            <Link to="/admin-dashboard/records" className="text-slate-500 hover:text-[#4a0080] transition-colors">Records</Link>
-            <button onClick={() => setShowReportsSoon(true)} className="text-slate-500 hover:text-[#4a0080] transition-colors">Reports</button>
+            <span className={`${isDark ? 'text-[#c89b2a] border-[#c89b2a]' : 'text-[#4a0080] border-[#4a0080]'} border-b-2 pb-1 cursor-default`}>Home</span>
+            <Link to="/admin-dashboard/reservation" className={`${isDark ? 'text-purple-200 hover:text-[#c89b2a]' : 'text-slate-500 hover:text-[#4a0080]'} transition-colors`}>Reservation</Link>
+            <Link to="/admin-dashboard/software" className={`${isDark ? 'text-purple-200 hover:text-[#c89b2a]' : 'text-slate-500 hover:text-[#4a0080]'} transition-colors`}>Software</Link>
+            <Link to="/admin-dashboard/students" className={`${isDark ? 'text-purple-200 hover:text-[#c89b2a]' : 'text-slate-500 hover:text-[#4a0080]'} transition-colors`}>Students</Link>
+            <Link to="/admin-dashboard/records" className={`${isDark ? 'text-purple-200 hover:text-[#c89b2a]' : 'text-slate-500 hover:text-[#4a0080]'} transition-colors`}>Records</Link>
           </div>
           
+          <button 
+            onClick={() => setIsDark(!isDark)} 
+            className={`text-xl p-2 rounded-full transition-all duration-200 ${isDark ? 'bg-white/5 hover:bg-white/10 text-white' : 'bg-black/5 hover:bg-black/10 text-slate-600'}`} 
+            title="Toggle Theme"
+          >
+            {isDark ? '☀️' : '🌙'}
+          </button>
+
           <button
-            onClick={handleLogout}
+            onClick={() => setShowLogoutModal(true)}
             className="bg-[#4a0080] text-white px-5 py-2.5 rounded-xl font-bold text-sm tracking-wide hover:bg-purple-900 transition-all shadow-md active:scale-95 inline-flex items-center gap-2.5"
           >
               <svg
@@ -157,24 +173,24 @@ export default function AdminDashboard() {
       </nav>
 
       {/* MAIN CONTENT AREA */}
-      <main className="p-8 flex-1 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+      <main className="p-8 flex-1 overflow-y-auto custom-scrollbar">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
           {/* LEFT COLUMN: STATISTICS */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col h-full overflow-hidden">
-            <div className="shrink-0 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-3 font-semibold flex items-center gap-2 text-[#4a0080]">
+          <div className={`border rounded-xl shadow-sm flex flex-col overflow-hidden transition-all duration-300 ${isDark ? 'bg-[#1e0838]/80 border-purple-500/20 text-white' : 'bg-white border-slate-200 text-slate-800'}`}>
+            <div className={`shrink-0 backdrop-blur-md border-b px-4 py-3 font-semibold flex items-center gap-2 transition-all duration-300 ${isDark ? 'bg-[#1e0838]/80 border-purple-500/20 text-[#c89b2a]' : 'bg-white/80 border-slate-200 text-[#4a0080]'}`}>
               <svg className="w-5 h-5 text-[#c89b2a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
               Statistics
             </div>
             
             <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
               <div className="grid grid-cols-1 gap-4 mb-8">
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
-                  <p className="text-sm font-bold text-slate-500 uppercase">Registered Students</p>
-                  <p className="text-3xl font-black text-[#4a0080]">{dashboardData.registered}</p>
+                <div className={`p-4 rounded-xl border flex justify-between items-center transition-all duration-300 ${isDark ? 'bg-[#2d114d]/50 border-purple-500/10' : 'bg-slate-50 border-slate-100'}`}>
+                  <p className={`text-sm font-bold uppercase ${isDark ? 'text-purple-300/80' : 'text-slate-500'}`}>Registered Students</p>
+                  <p className={`text-3xl font-black ${isDark ? 'text-purple-200' : 'text-[#4a0080]'}`}>{dashboardData.registered}</p>
                 </div>
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center">
-                  <p className="text-sm font-bold text-slate-500 uppercase">Active Sessions</p>
+                <div className={`p-4 rounded-xl border flex justify-between items-center transition-all duration-300 ${isDark ? 'bg-[#2d114d]/50 border-purple-500/10' : 'bg-slate-50 border-slate-100'}`}>
+                  <p className={`text-sm font-bold uppercase ${isDark ? 'text-purple-300/80' : 'text-slate-500'}`}>Active Sessions</p>
                   <p className="text-3xl font-black text-[#c89b2a]">{dashboardData.active}</p>
                 </div>
               </div>
@@ -185,13 +201,13 @@ export default function AdminDashboard() {
                 {/* The colored circle */}
                 <div className="w-full h-full rounded-full shadow-md" style={pieStyle}></div>
                 {/* The white inner circle to make it a "Donut" chart */}
-                <div className="absolute inset-0 m-auto w-3/5 h-3/5 bg-white rounded-full shadow-inner flex items-center justify-center">
-                   <span className="text-2xl font-black text-slate-800">{dashboardData.registered}</span>
+                <div className={`absolute inset-0 m-auto w-3/5 h-3/5 rounded-full shadow-inner flex items-center justify-center transition-all duration-300 ${isDark ? 'bg-[#1e0838]' : 'bg-white'}`}>
+                   <span className={`text-2xl font-black transition-all duration-300 ${isDark ? 'text-white' : 'text-slate-800'}`}>{dashboardData.registered}</span>
                 </div>
               </div>
 
               {/* DYNAMIC LEGEND */}
-              <div className="mt-6 flex flex-wrap justify-center gap-4 text-xs font-bold text-slate-600 uppercase">
+              <div className={`mt-6 flex flex-wrap justify-center gap-4 text-xs font-bold uppercase transition-all duration-300 ${isDark ? 'text-purple-200' : 'text-slate-600'}`}>
                  {dashboardData.courses.map((course, index) => (
                    <div key={course.user_course_name} className="flex items-center gap-1.5">
                      <div className="w-3 h-3 rounded-sm shadow-sm" style={{ backgroundColor: pieColors[index % pieColors.length] }}></div>
@@ -203,16 +219,16 @@ export default function AdminDashboard() {
           </div>
 
           {/* RIGHT COLUMN: ANNOUNCEMENT */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col h-full overflow-hidden">
-            <div className="shrink-0 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-3 font-semibold flex items-center gap-2 text-[#4a0080]">
+          <div className={`border rounded-xl shadow-sm flex flex-col overflow-hidden transition-all duration-300 ${isDark ? 'bg-[#1e0838]/80 border-purple-500/20 text-white' : 'bg-white border-slate-200 text-slate-800'}`}>
+            <div className={`shrink-0 backdrop-blur-md border-b px-4 py-3 font-semibold flex items-center gap-2 transition-all duration-300 ${isDark ? 'bg-[#1e0838]/80 border-purple-500/20 text-[#c89b2a]' : 'bg-white/80 border-slate-200 text-[#4a0080]'}`}>
               <svg className="w-5 h-5 text-[#c89b2a]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
               Post Announcement
             </div>
             
             <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
-              <div className="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+              <div className={`mb-8 p-6 rounded-2xl border transition-all duration-300 ${isDark ? 'bg-[#2d114d]/50 border-purple-500/10' : 'bg-slate-50 border-slate-100'}`}>
                 <textarea 
-                  className="w-full h-32 p-4 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#4a0080]/10 focus:border-[#4a0080] outline-none transition-all text-sm"
+                  className={`w-full h-32 p-4 border rounded-xl focus:ring-2 focus:ring-[#4a0080]/10 focus:border-[#4a0080] outline-none transition-all text-sm ${isDark ? 'bg-white/5 border-purple-500/20 text-purple-100 placeholder-purple-300/40' : 'bg-white border-slate-200 text-slate-800'}`}
                   placeholder="Type an announcement for all students..."
                   value={announcement}
                   onChange={(e) => setAnnouncement(e.target.value)}
@@ -229,16 +245,16 @@ export default function AdminDashboard() {
               <div className="space-y-4">
                 {announcementsList.length > 0 ? (
                   announcementsList.map((item) => (
-                    <div key={item.id} className="p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
+                    <div key={item.id} className={`p-4 border rounded-xl shadow-sm transition-all duration-300 ${isDark ? 'bg-[#2d114d]/30 border-purple-500/10' : 'bg-white border-slate-100'}`}>
                       <div className="flex items-start justify-between gap-3">
-                        <p className="font-bold text-[#4a0080] text-xs">
+                        <p className={`font-bold text-xs ${isDark ? 'text-[#c89b2a]' : 'text-[#4a0080]'}`}>
                           {item.admin_name} • {new Date(item.date_posted).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
                         </p>
-                        <button onClick={() => handleEditAnnouncement(item)} className="text-xs font-bold text-[#7c1fa0] hover:text-[#4a0080] transition-colors">
+                        <button onClick={() => handleEditAnnouncement(item)} className={`text-xs font-bold transition-colors ${isDark ? 'text-purple-300 hover:text-[#c89b2a]' : 'text-[#7c1fa0] hover:text-[#4a0080]'}`}>
                           Edit
                         </button>
                       </div>
-                      <p className="text-slate-600 text-sm mt-1 leading-relaxed whitespace-pre-wrap">
+                      <p className={`text-sm mt-1 leading-relaxed whitespace-pre-wrap ${isDark ? 'text-purple-200/80' : 'text-slate-600'}`}>
                         {item.content}
                       </p>
                     </div>
@@ -250,6 +266,11 @@ export default function AdminDashboard() {
             </div>
           </div>
 
+        </div>
+
+        {/* ANALYTICS CHARTS SECTION */}
+        <div className="mt-8">
+          <AnalyticsCharts isDark={isDark} />
         </div>
       </main>
 
@@ -293,6 +314,12 @@ export default function AdminDashboard() {
           message="This feature will be available soon!"
         />
       )}
+
+      <LogoutModal 
+        isOpen={showLogoutModal} 
+        onClose={() => setShowLogoutModal(false)} 
+        onConfirm={handleLogout} 
+      />
 
     </div>
   );
