@@ -33,7 +33,7 @@ export default function RegisterModal({ onClose, isDark }) {
     }
 
     // Send data to PHP
-    fetch('http://localhost:8080/api/register.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/register.php`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(formData)

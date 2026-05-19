@@ -33,7 +33,7 @@ export default function AdminRecords() {
   }, []);
 
   const fetchTestimonials = () => {
-    fetch('http://localhost:8080/api/get_testimonials.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_testimonials.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') setTestimonials(data.data);
@@ -43,7 +43,7 @@ export default function AdminRecords() {
 
   const fetchActiveStudents = () => {
     // This script correctly filters for role='Student' AND user_is_active=1
-    fetch('http://localhost:8080/api/get_active_students.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_active_students.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') setActiveStudents(data.students);
@@ -54,7 +54,7 @@ export default function AdminRecords() {
   const handleLogout = () => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
     if (savedUser && savedUser.user_id) {
-      fetch('http://localhost:8080/api/logout.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/logout.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: savedUser.user_id })
@@ -77,7 +77,7 @@ const openFeedbackModal = (studentId) => {
   };
 
   const confirmEndSession = () => {
-    fetch('http://localhost:8080/api/end_session.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/end_session.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

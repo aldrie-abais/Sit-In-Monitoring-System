@@ -64,7 +64,7 @@ export default function AdminSoftware() {
   // Fetch Software Data
   const fetchSoftwares = () => {
     setLoading(true);
-    fetch('http://localhost:8080/api/get_softwares.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_softwares.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -86,7 +86,7 @@ export default function AdminSoftware() {
     const isConfirmed = window.confirm(`Are you sure you want to delete "${name}"?`);
     if (!isConfirmed) return;
 
-    fetch('http://localhost:8080/api/delete_software.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/delete_software.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
@@ -108,7 +108,7 @@ export default function AdminSoftware() {
   const handleLogout = () => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
     if (savedUser && savedUser.user_id) {
-      fetch('http://localhost:8080/api/logout.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/logout.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: savedUser.user_id })

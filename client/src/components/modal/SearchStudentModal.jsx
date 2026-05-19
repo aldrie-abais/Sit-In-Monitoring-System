@@ -8,7 +8,7 @@ export default function SearchStudentModal({ onClose, onStudentFound }) {
   const isDark = localStorage.getItem('isDark') === 'true';
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/get_all_students.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_all_students.php`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status === 'success') {
@@ -38,7 +38,7 @@ export default function SearchStudentModal({ onClose, onStudentFound }) {
       return;
     }
 
-    fetch('http://localhost:8080/api/search_student.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/search_student.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: targetId })

@@ -34,7 +34,7 @@ export default function AdminReservation() {
   const handleLogout = () => {
     const savedUser = JSON.parse(localStorage.getItem('user'));
     if (savedUser && savedUser.user_id) {
-      fetch('http://localhost:8080/api/logout.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/logout.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: savedUser.user_id })
@@ -46,7 +46,7 @@ export default function AdminReservation() {
   };
 
   const fetchLabs = () => {
-    fetch('http://localhost:8080/api/get_labs.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_labs.php`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
@@ -57,7 +57,7 @@ export default function AdminReservation() {
   };
 
   const fetchPendingRequests = () => {
-    fetch('http://localhost:8080/api/get_pending_reservations.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_pending_reservations.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -68,7 +68,7 @@ export default function AdminReservation() {
   };
 
   const fetchSystemLogs = () => {
-    fetch('http://localhost:8080/api/get_system_logs.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_system_logs.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -252,7 +252,7 @@ export default function AdminReservation() {
 
   const openPcModal = (lab) => {
     setSelectedLab(lab);
-    fetch('http://localhost:8080/api/get_pcs_by_lab.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_pcs_by_lab.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ lab_id: lab.id })
@@ -278,7 +278,7 @@ export default function AdminReservation() {
     };
     const nextStatus = nextStatusMap[pc.status] || 'Available';
 
-    fetch('http://localhost:8080/api/update_pc_status.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/update_pc_status.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pc_id: pcId, status: nextStatus })
@@ -303,7 +303,7 @@ export default function AdminReservation() {
     if (!selectedLab) return;
     const newStatus = selectedLab.is_available == 1 ? 0 : 1;
 
-    fetch('http://localhost:8080/api/update_lab_status.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/update_lab_status.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ lab_id: selectedLab.id, is_available: newStatus })
@@ -321,7 +321,7 @@ export default function AdminReservation() {
   };
 
   const handleApprove = (req) => {
-    fetch('http://localhost:8080/api/process_reservation.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/process_reservation.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -345,7 +345,7 @@ export default function AdminReservation() {
   };
 
   const handleDeny = (req) => {
-    fetch('http://localhost:8080/api/process_reservation.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/process_reservation.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

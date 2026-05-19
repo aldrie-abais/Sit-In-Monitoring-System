@@ -11,7 +11,7 @@ export default function EditAnnouncementModal({ announcement, onClose, onSuccess
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetch('http://localhost:8080/api/edit_announcement.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/edit_announcement.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: announcement.id, content })

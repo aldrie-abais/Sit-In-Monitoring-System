@@ -11,7 +11,7 @@ export default function NotificationDropdown() {
   const fetchNotifications = () => {
     if (!savedUser.user_id) return;
 
-    fetch('http://localhost:8080/api/get_notifications.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_notifications.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: savedUser.user_id })
@@ -50,7 +50,7 @@ export default function NotificationDropdown() {
   const handleMarkAsRead = (notificationId, e) => {
     e.stopPropagation();
     
-    fetch('http://localhost:8080/api/mark_notification_read.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/mark_notification_read.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ notification_id: notificationId })
@@ -68,7 +68,7 @@ export default function NotificationDropdown() {
     e.stopPropagation();
     if (!savedUser.user_id) return;
 
-    fetch('http://localhost:8080/api/mark_all_notifications_read.php', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/mark_all_notifications_read.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: savedUser.user_id })

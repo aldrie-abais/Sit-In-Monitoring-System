@@ -29,7 +29,7 @@ export default function Dashboard() {
 
   // 1. Fetch Announcements on Load
   useEffect(() => {
-    fetch('http://localhost:8080/api/get_announcements.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_announcements.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -44,7 +44,7 @@ export default function Dashboard() {
     if (!currentUser.user_id) return;
 
     const checkStatus = () => {
-      fetch('http://localhost:8080/api/check_session.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/check_session.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: currentUser.user_id })
@@ -76,12 +76,12 @@ export default function Dashboard() {
   };
 
   const avatarUrl = currentUser.profile_picture 
-    ? `http://localhost:8080/api/${currentUser.profile_picture}`
+    ? `${import.meta.env.VITE_API_BASE_URL}/${currentUser.profile_picture}`
     : `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.user_first_name || 'Felix'}`;
 
   const handleLogout = (feedback) => {
     if (currentUser && currentUser.user_id) {
-      fetch('http://localhost:8080/api/logout.php', {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/logout.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: currentUser.user_id, feedback: feedback || '' })

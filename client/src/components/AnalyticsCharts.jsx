@@ -37,7 +37,7 @@ export default function AnalyticsCharts({ isDark = false }) {
     // Trigger fresh animation every time the component mounts (navigating to Home)
     setAnimationKey(prev => prev + 1);
     
-    fetch('http://localhost:8080/api/get_analytics.php')
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/get_analytics.php`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {

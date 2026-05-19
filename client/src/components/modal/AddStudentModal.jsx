@@ -40,7 +40,7 @@ export default function AddStudentModal({ onClose, onSuccess, isDark = false, mo
   const handleSubmit = (e) => {
     e.preventDefault(); 
 
-    const endpoint = mode === 'edit' ? 'http://localhost:8080/api/edit_student.php' : 'http://localhost:8080/api/admin_register.php';
+    const endpoint = mode === 'edit' ? `${import.meta.env.VITE_API_BASE_URL}/edit_student.php` : `${import.meta.env.VITE_API_BASE_URL}/admin_register.php`;
 
     fetch(endpoint, {
       method: 'POST',
